@@ -9,7 +9,9 @@ using System.Collections.Concurrent;
 using Newtonsoft.Json;
 
 using SuperIntelligence.Game;
-using SuperIntelligence.NN;
+using SuperIntelligence.NEAT;
+
+using static SuperIntelligence.Random.Random;
 
 namespace SuperIntelligence
 {
@@ -19,7 +21,7 @@ namespace SuperIntelligence
         public static ConcurrentQueue<GameManager> AvailableGameManagers = new ConcurrentQueue<GameManager>();
         public static ConcurrentQueue<Individual> TestedIndividuals = new ConcurrentQueue<Individual>();
         public static ConcurrentQueue<Individual> UntestedIndividuals = new ConcurrentQueue<Individual>();
-        public static int GameCount = 9;
+        public static int GameCount = 5;
 
         private static AutoResetEvent managerAvailableEvent = new AutoResetEvent(false);
         private static AutoResetEvent individualTestedEvent = new AutoResetEvent(false);
@@ -47,91 +49,52 @@ namespace SuperIntelligence
                 manager.Kill();
         }
 
-        public static List<Individual> NewGenerationWithElitism(List<Individual> elite, int generationId)
+        public static Generation MakeFirstGeneration(InnovationGenerator generator, int initialPopulationSize)
         {
-            // TODO: I could probably do this with a couple of linq expressions
-            List<Individual> nextGen = new List<Individual>(elite.Count * elite.Count);
+            Generation generation = new Generation(0);
+            Genome genome = new Genome(0);
 
-            int generationIndex = 0;
-            foreach (Individual individual in elite)
+            int inputs = 13;
+            int outputs = 2;
+
+            // input nodes
+            for (int i = 0; i < inputs; i++)
             {
-                nextGen.Add(individual);
-
-                foreach (Individual other in elite)
-                {
-                    if (individual == other)
-                        continue;
-
-                    Individual child = Individual.GenerateChild(individual, other);
-                    child.Generation = generationId;
-                    child.Index = generationIndex++;
-
-                    nextGen.Add(child);
-                }
+                genome.AddNode(new Node(i, NodeType.Input, int.MinValue));
             }
 
-            return nextGen;
-        }
-
-        public static List<Individual> CreateFirstGeneration()
-        {
-            Network mNet = new Network(2);
-            mNet.Layers.Add((new Layer(6)).InitializePerceptrons(6, 12));
-            mNet.Layers.Add((new Layer(2)).InitializePerceptrons(2, 6));
-            mNet.Normalize(AIRunner.NetworkInputs, AIRunner.NetworkOutputs);
-            Individual michelangelo = new Individual(mNet, 0);
-            michelangelo.Index = 0;
-
-            Network dNet = new Network(2);
-            dNet.Layers.Add((new Layer(7)).InitializePerceptrons(7, 12));
-            dNet.Layers.Add((new Layer(2)).InitializePerceptrons(2, 7));
-            dNet.Normalize(AIRunner.NetworkInputs, AIRunner.NetworkOutputs);
-            Individual donatello = new Individual(dNet, 0);
-            michelangelo.Index = 1;
-
-            Network rNet = new Network(2);
-            rNet.Layers.Add((new Layer(8)).InitializePerceptrons(8, 12));
-            rNet.Layers.Add((new Layer(2)).InitializePerceptrons(2, 8));
-            rNet.Normalize(AIRunner.NetworkInputs, AIRunner.NetworkOutputs);
-            Individual raphael = new Individual(rNet, 0);
-            michelangelo.Index = 2;
-
-            Network lNet = new Network(2);
-            lNet.Layers.Add((new Layer(9)).InitializePerceptrons(9, 12));
-            lNet.Layers.Add((new Layer(2)).InitializePerceptrons(2, 9));
-            lNet.Normalize(AIRunner.NetworkInputs, AIRunner.NetworkOutputs);
-            Individual leonardo = new Individual(lNet, 0);
-            michelangelo.Index = 3;
-
-            Network cNet = new Network(1);
-            cNet.Layers.Add((new Layer(2)).InitializePerceptrons(2, 12));
-            cNet.Normalize(AIRunner.NetworkInputs, AIRunner.NetworkOutputs);
-            Individual caravaggio = new Individual(cNet, 0);
-            caravaggio.Index = 4;
-
-            Network bNet = new Network(1);
-            bNet.Layers.Add((new Layer(2)).InitializePerceptrons(4, 12));
-            bNet.Normalize(AIRunner.NetworkInputs, AIRunner.NetworkOutputs);
-            Individual boticcelli = new Individual(bNet, 0);
-            boticcelli.Index = 5;
-
-            List<Individual> first = new List<Individual>(4)
+            // output nodes
+            for (int i = 0; i < outputs; i++)
             {
-                michelangelo,
-                donatello,
-                raphael,
-                leonardo,
-                caravaggio,
-                boticcelli,
-            };
+                genome.AddNode(new Node(i + inputs, NodeType.Output, int.MaxValue));
 
-            return NewGenerationWithElitism(first, 1);
+                for (int j = 0; j < inputs; j++)
+                {
+                    genome.AddConnection(new Connection(j, i + inputs, Double() * 4f - 2f, true, generator.Innovate()));
+                }
+            }
+            genome.NextNodeId = inputs + outputs;
+
+            Species original = new Species(genome);
+            generation.Species.Add(original);
+
+            for (int i = 0; i < initialPopulationSize; i++)
+            {
+                Genome g = genome.Copy();
+                g.Mutate(generator);
+
+                original.AddGenome(g);
+            }
+
+            return generation;
         }
 
         static void Main(string[] args)
         {
             string hexagonDirectory = "C:\\Users\\Leonardo\\Desktop\\super_hexagon-windows";
             string hexagonFile = "superhexagon.exe";
+            GameModes mode = GameModes.Hexagonest;
+            int initialSize = 30;
 
             // start game instances
             Console.Write("Starting {0} Super Hexagon instances... ", GameCount);
@@ -150,21 +113,29 @@ namespace SuperIntelligence
             Directory.CreateDirectory(runDirectoryPath);
             Console.WriteLine("OK!");
 
-            // create first generation
-            Console.Write("Creating generation 0... ");
-            List<Individual> firstGen = CreateFirstGeneration();
-            Console.WriteLine("OK!");
 
-            // do the test-rank-reproduce loop
-            List<Individual> generation = firstGen;
-            int generationId = 1;
-            GameModes mode = GameModes.Hexagon;
-            while (true) // TODO: think of a better condition
+            InnovationGenerator generator = new InnovationGenerator();
+            Generation generation = MakeFirstGeneration(generator, initialSize);
+            while (true)
             {
-                // add the generation to the untested queue
-                generation.ForEach(i => UntestedIndividuals.Enqueue(i));
+                Console.WriteLine("Generation " + generation.Number + " starting (" + generation.Species.Sum(s => s.Members.Count) + ")...");
 
-                // test all the individuals in the generation
+                // add the individuals to the list of untested individuals
+                int generationCount = 0;
+                foreach (Species s in generation.Species)
+                {
+                    foreach (Genome member in s.Members)
+                    {
+                        Individual individual = new Individual(member, generation.Number);
+                        individual.Prepare();
+                        individual.Index = generationCount;
+
+                        UntestedIndividuals.Enqueue(individual);
+                        generationCount++;
+                    }
+                }
+
+                // test all individuals in generation
                 while (!UntestedIndividuals.IsEmpty)
                 {
                     // in case there are no available game managers, wait for a signal on
@@ -211,43 +182,31 @@ namespace SuperIntelligence
 
                 // now we know all individuals are either testing or tested
                 // let's wait until all individuals have been tested
-                while (TestedIndividuals.Count != generation.Count)
-                {
+                while (TestedIndividuals.Count != generationCount)
                     individualTestedEvent.WaitOne();
-                }
 
-                // now we know all individuals have been tested, so we can decide on the
-                // next generation
-
-                // rank the next generation
-                List<Individual> best = generation
-                    .OrderByDescending(i => i.Fitness)
-                    .Take(4)
+                List<Genome> bestInGeneration = generation.Species
+                    .Select(s => s.Members.OrderByDescending(m => m.Fitness).First())
                     .ToList();
 
-                // print and save generation data
-                foreach (Individual i in best)
+                // print them
+                Console.WriteLine("Generation " + generation.Number);
+                foreach (Species s in generation.Species)
                 {
-                    Console.WriteLine("Generation {0} Individual {1}", i.Generation, i.Index);
-                    Console.WriteLine("\tFitness: {0}", i.Fitness);
-                    Console.Write("\tTopology: ");
-
-                    foreach (Layer l in i.Net.Layers)
-                    {
-                        Console.Write(l.Perceptrons.Count + " ");
-                    }
-                    Console.WriteLine("");
+                    Genome genome = s.Members.First();
+                    Console.WriteLine("\tFitness: " + genome.Fitness);
                 }
 
-                string genFileName = "gen-" + generationId + ".json";
+                string genFileName = "gen-" + generation.Number + ".json";
                 var genFile = File.Create(Path.Combine(runDirectoryPath, genFileName));
-                var buf = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(best));
+                var buf = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(generation));
                 genFile.Write(buf, 0, buf.Length);
                 genFile.Close();
                 Console.WriteLine("Generation file saved: " + genFileName);
 
-                // generate next generation
-                generation = NewGenerationWithElitism(best, ++generationId);
+                // make next generation
+                generation = generation.Next(generator);
+
                 // clean up this generation's data
                 TestedIndividuals = new ConcurrentQueue<Individual>();
             }

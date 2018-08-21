@@ -197,10 +197,8 @@ namespace SuperIntelligence.Game
         public void SetWindowTitle(string title) =>
             Memory.Windows.MainWindow.Title = title;
 
-        public void Kill()
-        {
+        public void Kill() =>
             Process.Kill();
-        }
 
         public int GetCurrentPlayerSlot() =>
             (int)((PlayerAngle * SlotCount) / 360);

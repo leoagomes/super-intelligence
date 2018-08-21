@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 
 using MathNet.Numerics.Random;
-using MathNet.Numerics.Distributions;
 
 namespace SuperIntelligence.NN
 {
-    public class WeightGenerator
+    public class Random
     {
         public static double GenerateWeight() =>
             SystemRandomSource.Default.NextDouble();
@@ -18,11 +17,20 @@ namespace SuperIntelligence.NN
 
         public static double GenerateWeight(int inputs, int layerCount) =>
             (layerCount + ((layerCount - inputs) * (SystemRandomSource.Default.NextDouble()))) * Math.Sqrt(2.0/inputs);
+
+        public static bool InChance(double chance) =>
+            (SystemRandomSource.Default.NextDouble() <= chance);
+
+        public static T Choose<T>(T a, T b) =>
+            (SystemRandomSource.Default.NextBoolean() ? a : b);
+
+        public static double Double() =>
+            SystemRandomSource.Default.NextDouble();
     }
 
     public class Perceptron
     {
-        public static double CrossOverChance = 0.3;
+        public static double CrossOverChance = 0.5;
         public static double MutationChance = 0.15;
 
         public double Bias;
@@ -43,8 +51,8 @@ namespace SuperIntelligence.NN
             Weights.Clear();
 
             for (int i = 0; i < inputs; i++)
-                Weights.Add(WeightGenerator.GenerateWeight(inputs, layerCount));
-            Bias = WeightGenerator.GenerateWeight(inputs, layerCount);
+                Weights.Add(Random.GenerateWeight(inputs, layerCount));
+            Bias = Random.GenerateWeight(inputs, layerCount);
 
             return this;
         }
@@ -85,8 +93,8 @@ namespace SuperIntelligence.NN
                 int diff = inputs - Weights.Count;
                 for (int i = 0; i < diff; i++)
                     Weights.Add(layerCount > 0 ?
-                        WeightGenerator.GenerateWeight(inputs, layerCount)
-                        : WeightGenerator.GenerateWeight(inputs));
+                        Random.GenerateWeight(inputs, layerCount)
+                        : Random.GenerateWeight(inputs));
             }
             else if (inputs < Weights.Count)
             {
@@ -95,12 +103,23 @@ namespace SuperIntelligence.NN
             }
         }
 
+        public void Mutate()
+        {
+            for (int i = 0; i < Weights.Count; i++)
+            {
+                if (Random.InChance(MutationChance))
+                    Weights[i] *= 2; // TODO: try other things
+            }
+            if (Random.InChance(MutationChance))
+                Bias *= 2; // TODO: try other things
+        }
+
         public static Perceptron GenerateChild(Perceptron a, Perceptron b)
         {
             // child generation step
             Perceptron child;
 
-            var shouldCrossOver = SystemRandomSource.Default.NextDouble() <= CrossOverChance;
+            var shouldCrossOver = Random.InChance(CrossOverChance);
             if (shouldCrossOver)
             {
                 int inputs = Math.Min(a.Weights.Count, b.Weights.Count);
@@ -108,7 +127,7 @@ namespace SuperIntelligence.NN
                 child = new Perceptron(inputs);
                 int crossOverPoint = (int)(SystemRandomSource.Default.NextDouble() * inputs);
 
-                Perceptron parent = SystemRandomSource.Default.NextBoolean() ? a : b;
+                Perceptron parent = Random.Choose(a, b);
                 child.Bias = parent.Bias;
                 for (int i = 0; i < inputs; i++)
                 {
@@ -120,17 +139,11 @@ namespace SuperIntelligence.NN
             }
             else
             {
-                child = (SystemRandomSource.Default.NextBoolean() ? a : b).Clone();
+                child = Random.Choose(a, b).Clone();
             }
 
             // mutation step
-            for (int i = 0; i < child.Weights.Count; i++)
-            {
-                if (SystemRandomSource.Default.NextDouble() <= MutationChance)
-                    child.Weights[i] = -child.Weights[i]; // TODO: try other things
-            }
-            if (SystemRandomSource.Default.NextDouble() <= MutationChance)
-                child.Bias = -child.Bias; // TODO: try other things
+            child.Mutate();
 
             return child;
         }
@@ -138,7 +151,9 @@ namespace SuperIntelligence.NN
 
     public class Layer
     {
+        public static double CrossOverChance = 0.5;
         public static double MutationChance = 0.15;
+        public static double MutationAugmentChance = 0.60;
         public List<Perceptron> Perceptrons;
 
         public Layer()
@@ -197,43 +212,58 @@ namespace SuperIntelligence.NN
             return layer;
         }
 
+        public void Mutate()
+        {
+            bool shouldMutate = Random.InChance(MutationChance);
+            if (shouldMutate)
+            {
+                if (Random.InChance(MutationAugmentChance))
+                {
+                    Perceptrons.Add(new Perceptron());
+                }
+                else if (Perceptrons.Count > 1)
+                {
+                    Perceptrons.RemoveAt((int)(SystemRandomSource.Default.NextDouble() * Perceptrons.Count));
+                }
+            }
+
+        }
+
         public static Layer GenerateChild(Layer a, Layer b)
         {
             // child creation step
-            Layer alpha = SystemRandomSource.Default.NextBoolean() ? a : b;
+            Layer child;
+
+            Layer alpha = Random.Choose(a, b);
             Layer beta = alpha == a ? b : a;
 
-            Layer child = new Layer(alpha.Perceptrons.Count);
-
-            // & as many perceptrons as possible
-            int common = Math.Min(alpha.Perceptrons.Count, beta.Perceptrons.Count);
-            for (int i = 0; i < common; i++)
+            if (Random.InChance(CrossOverChance))
             {
-                child.Perceptrons.Add(Perceptron.GenerateChild(alpha.Perceptrons[i], beta.Perceptrons[i]));
+                child = new Layer(alpha.Perceptrons.Count);
+
+                // & as many perceptrons as possible
+                int common = Math.Min(alpha.Perceptrons.Count, beta.Perceptrons.Count);
+                for (int i = 0; i < common; i++)
+                {
+                    child.Perceptrons.Add(Perceptron.GenerateChild(alpha.Perceptrons[i], beta.Perceptrons[i]));
+                }
+
+                // check if the child should have more perceptrons than it currently has
+                if (child.Perceptrons.Count < alpha.Perceptrons.Count)
+                {
+                    // in which case, fill the remaining spots with copies of alpha's perceptrons
+                    for (int i = common; i < alpha.Perceptrons.Count; i++)
+                        child.Perceptrons.Add(alpha.Perceptrons[i].Clone());
+                }
             }
-
-            // check if the child should have more perceptrons than it currently has
-            if (child.Perceptrons.Count < alpha.Perceptrons.Count)
+            else
             {
-                // in which case, fill the remaining spots with copies of alpha's perceptrons
-                for (int i = common; i < alpha.Perceptrons.Count; i++)
-                    child.Perceptrons.Add(alpha.Perceptrons[i].Clone());
+                child = alpha.Clone();
             }
 
             // mutation
             // adds or removes a perceptron
-            bool shouldMutate = SystemRandomSource.Default.NextDouble() <= MutationChance;
-            if (shouldMutate)
-            {
-                if (SystemRandomSource.Default.NextBoolean())
-                {
-                    child.Perceptrons.Add(new Perceptron());
-                }
-                else if (child.Perceptrons.Count > 1)
-                {
-                    child.Perceptrons.RemoveAt((int)(SystemRandomSource.Default.NextDouble() * child.Perceptrons.Count));
-                }
-            }
+            child.Mutate();
 
             return child;
         }
@@ -241,7 +271,9 @@ namespace SuperIntelligence.NN
 
     public class Network
     {
+        public static double CrossOverChance = 0.5;
         public static double MutationChance = 0.05;
+        public static double MutationAugmentChance = 0.6;
 
         public List<Layer> Layers = new List<Layer>();
 
@@ -301,35 +333,48 @@ namespace SuperIntelligence.NN
 
         public static Network GenerateChild(Network a, Network b)
         {
-            // child generation step
+            Network child;
+
             Network alpha = SystemRandomSource.Default.NextBoolean() ? a : b;
             Network beta = alpha == a ? b : a;
 
-            Network child = new Network(alpha.Layers.Count);
-
-            int common = Math.Min(alpha.Layers.Count, beta.Layers.Count);
-            for (int i = 0; i < common; i++)
-                child.Layers.Add(Layer.GenerateChild(alpha.Layers[i], beta.Layers[i]));
-
-            if (child.Layers.Count != alpha.Layers.Count)
+            // child generation step
+            if (Random.InChance(CrossOverChance))
             {
-                for (int i = common; i < alpha.Layers.Count; i++)
+                child = new Network(alpha.Layers.Count);
+
+                int common = Math.Min(alpha.Layers.Count, beta.Layers.Count);
+                for (int i = 0; i < common; i++)
+                    child.Layers.Add(Layer.GenerateChild(alpha.Layers[i], beta.Layers[i]));
+
+                if (child.Layers.Count != alpha.Layers.Count)
                 {
-                    child.Layers.Add(alpha.Layers[i].Clone());
+                    for (int i = common; i < alpha.Layers.Count; i++)
+                    {
+                        child.Layers.Add(alpha.Layers[i].Clone());
+                    }
                 }
             }
+            else
+            {
+                child = alpha.Clone();
+            }
+
+            // no topology changes for now
+            return child;
 
             // mutation step
-            bool shouldMutate = SystemRandomSource.Default.NextDouble() < MutationChance;
+            bool shouldMutate = Random.InChance(MutationChance);
             if (shouldMutate)
             {
-                // either removes or clones a random layer
-                if (SystemRandomSource.Default.NextBoolean())
+                // either removes or adds a random layer with the same number of neurons as the layer before it
+                if (Random.InChance(MutationAugmentChance))
                 {
                     // clones a random layer
                     int index = (int)(SystemRandomSource.Default.NextDouble() * child.Layers.Count);
-                    Layer clone = child.Layers[index].Clone();
-                    child.Layers.Insert(index, clone);
+                    int perceptronCount = child.Layers[index].Perceptrons.Count;
+                    Layer clone = new Layer(perceptronCount).InitializePerceptrons(perceptronCount, perceptronCount);
+                    child.Layers.Insert(index + 1, clone);
                 }
                 else
                 {

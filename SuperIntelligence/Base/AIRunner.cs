@@ -10,11 +10,11 @@ using SuperIntelligence.Game;
 
 namespace SuperIntelligence
 {
-    public class AIRunner
+    class AIRunner
     {
-        public static int NetworkInputs = 12;
+        public static int NetworkInputs = 13;
         public static int NetworkOutputs = 2;
-        public static double ButtonDownThreshold = 0.65;
+        public static double ButtonDownThreshold = 0;
         public static int DefaultTicksPerSecond = 50;
 
         public GameManager Manager;
@@ -32,7 +32,7 @@ namespace SuperIntelligence
             Mode = mode;
         }
 
-        void PopulateInputWithGameState(ref List<double> input)
+        public void PopulateInputWithGameState(ref List<double> input)
         {
             // network input is the distance between each slot's closest wall and the middle of
             // the screen and the angle between the player ship and the (center of) the slot
@@ -48,7 +48,7 @@ namespace SuperIntelligence
                 int index = 2 * i;
 
                 // add slot distance to input
-                double distance = 200000.0;
+                double distance = 4.0;
                 foreach (Wall wall in closer)
                 {
                     if (wall.Slot == i)
@@ -78,6 +78,9 @@ namespace SuperIntelligence
             // slots, making it "cyclical"
             for (int i = slotCount * 2; i < 12; i++)
                 input[i] = input[i - (slotCount * 2)];
+
+            // add the final bias parameter
+            input[NetworkInputs - 1] = 1;
         }
 
         private int FarthestWallSlot(List<double> input)
@@ -96,10 +99,10 @@ namespace SuperIntelligence
 
         public void DoGameRun()
         {
-            Individual.Net.Normalize(NetworkInputs, NetworkOutputs);
+            //Individual.Prepare();
 
             // Set the game window's title
-            Game.SetWindowTitle("Gen " + Individual.Generation + ":" + Individual.Index + ", " + Individual.Net.TopologyString());
+            Game.SetWindowTitle("Gen " + Individual.Generation + ":" + Individual.Index);
 
             Manager.PrepareForMode(Mode);
 
@@ -121,7 +124,7 @@ namespace SuperIntelligence
                 PopulateInputWithGameState(ref input);
 
                 // run the inputs through the network
-                List<double> output = Individual.Net.Sigmoid(input);
+                List<double> output = Individual.Forward(input);
 
                 // make sure the number of outputs is correct
                 if (output.Count != NetworkOutputs)
@@ -143,8 +146,8 @@ namespace SuperIntelligence
                 // if it is maintaining the slot of the farthest wall, give it more points
                 if (playerSlot == lastPlayerSlot && playerSlot == farthestWallSlot)
                     fitness += 10;
-                else
-                    fitness -= 1;
+                else if (playerSlot == lastPlayerSlot)
+                    fitness -= 2;
 
                 // if it just changed slots
                 if (playerSlot != lastPlayerSlot)
@@ -154,14 +157,13 @@ namespace SuperIntelligence
                         fitness += 10;
                     // if the current slot's wall is closer than the last's, remove some points
                     else if (input[lastPlayerSlot] > input[playerSlot * 2])
-                        fitness -= 05;
+                        fitness -= 12;
                 }
                 lastPlayerSlot = playerSlot;
 
                 // wait for next tick
                 CurrentTick++;
                 // increase fitness since it has lived longer
-                fitness += 1;
                 Thread.Sleep(1000 / TicksPerSecond);
             }
 
