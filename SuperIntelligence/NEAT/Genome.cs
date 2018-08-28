@@ -107,8 +107,8 @@ namespace SuperIntelligence.NEAT
             }
         }
 
-        public static double CreateNodeProbability = 0.03;
-        public static double CreateConnectionProbability = 0.05;
+        public static double CreateNodeProbability = 0.3;
+        public static double CreateConnectionProbability = 0.15;
         public void Mutate(InnovationGenerator generator)
         {
             if (InChance(WeightMutationProbability))

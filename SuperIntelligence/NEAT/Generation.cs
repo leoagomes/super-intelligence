@@ -8,26 +8,6 @@ using static SuperIntelligence.Random.Random;
 
 namespace SuperIntelligence.NEAT
 {
-    class Species
-    {
-        public static double CompatibilityThreshold = 3.0;
-
-        public Genome Representative;
-        public List<Genome> Members;
-
-        public Species(Genome representative)
-        {
-            Members = new List<Genome>();
-            Representative = representative;
-        }
-
-        public bool CompatibleWith(Genome genome) =>
-            Representative.CompatibilityWith(genome) < CompatibilityThreshold;
-
-        public void AddGenome(Genome genome) =>
-            Members.Add(genome);
-    }
-
     class Generation
     {
         public int Number;
@@ -71,10 +51,8 @@ namespace SuperIntelligence.NEAT
 
             foreach (Species oldSpecies in Species)
             {
-                if (oldSpecies.Members.Count <= 0)
-                    continue;
-
                 Species newSpecies = new Species(Choose(oldSpecies.Members.ToArray()));
+                newSpecies.AddGenome(newSpecies.Representative);
                 next.Species.Add(newSpecies);
 
                 var topMembers = oldSpecies.Members

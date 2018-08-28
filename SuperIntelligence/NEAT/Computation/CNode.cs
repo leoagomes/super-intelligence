@@ -10,6 +10,7 @@ namespace SuperIntelligence.NEAT.Computation
     {
         private bool recalculate;
         private double value;
+        private bool midComputation;
 
         public int Id { get; private set; }
         public List<IValueProvider<double>> Dependencies;
@@ -30,6 +31,7 @@ namespace SuperIntelligence.NEAT.Computation
         {
             value = 0;
             recalculate = true;
+            midComputation = false;
 
             Id = id;
             ActivationFunction = activation;
@@ -40,11 +42,16 @@ namespace SuperIntelligence.NEAT.Computation
 
         public double GetValue()
         {
+            if (midComputation)
+                throw new Exception("Computation graph has cycles!");
+
             if (!recalculate)
                 return value;
 
             if (Dependencies.Count != Weights.Count)
                 throw new Exception("CNode " + Id + " has different dependency and weight counts.");
+
+            midComputation = true;
 
             double val = 0.0;
             for (int i = 0; i < Dependencies.Count; i++)
@@ -52,6 +59,8 @@ namespace SuperIntelligence.NEAT.Computation
 
             value = ActivationFunction(val);
             recalculate = false;
+
+            midComputation = false;
 
             return val;
         }
