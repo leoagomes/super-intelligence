@@ -87,6 +87,7 @@ namespace SuperIntelligence.Game
 
                     // else, go back to the mode selection menu
                     PressReleaseKey(Keys.Escape);
+                    State = GameStates.ModeSelection;
 
                     // make next transition
                     PrepareForMode(mode);
@@ -94,6 +95,7 @@ namespace SuperIntelligence.Game
                 case GameStates.InGame:
                     // transition to GameOver by pressing esc
                     PressReleaseKey(Keys.Escape);
+                    State = GameStates.GameOver;
 
                     // make next state transition
                     PrepareForMode(mode);

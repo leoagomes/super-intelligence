@@ -57,8 +57,8 @@ namespace SuperIntelligence
             Generation generation = new Generation(0);
             Genome genome = new Genome(0);
 
-            int inputs = 13;
-            int outputs = 2;
+            int inputs = Data.Constants.NetworkInputs;
+            int outputs = Data.Constants.NetworkOutputs;
 
             List<int> inputIds = new List<int>(inputs);
 
@@ -155,7 +155,7 @@ namespace SuperIntelligence
                     foreach (Genome member in s.Members)
                     {
                         Individual individual = new Individual(member, generation.Number);
-                        individual.Prepare();
+                        //individual.Prepare();
                         individual.Index = generationCount;
 
                         UntestedIndividuals.Enqueue(individual);
@@ -226,6 +226,8 @@ namespace SuperIntelligence
                 OnGenerationFinished(generation);
                 generation = generation.Next(generator);
                 OnNextGeneration(generation);
+
+                // ajustes da mutação
 
                 // clean up this generation's data
                 TestedIndividuals = new ConcurrentQueue<Individual>();

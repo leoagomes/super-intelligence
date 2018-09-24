@@ -125,6 +125,7 @@
     <Compile Include="Base\Individual.cs" />
     <Compile Include="Base\AIRunner.cs" />
     <Compile Include="Data\AplicationSettingsData.cs" />
+    <Compile Include="Data\Constants.cs" />
     <Compile Include="Game\GameManager.cs" />
     <Compile Include="Game\GameInstance.cs" />
     <Compile Include="GenomeViewForm.cs">
@@ -135,7 +136,7 @@
     </Compile>
     <Compile Include="NEAT\Computation\CNode.cs" />
     <Compile Include="NEAT\Computation\ValueProvider.cs" />
-    <Compile Include="NEAT\Network.cs" />
+    <Compile Include="NEAT\Computation\Network.cs" />
     <Compile Include="NEAT\Generation.cs" />
     <Compile Include="NEAT\InnovationGenerator.cs" />
     <Compile Include="NEAT\Genes.cs" />

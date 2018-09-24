@@ -49,6 +49,7 @@
             this.mainTabControl = new System.Windows.Forms.TabControl();
             this.runTabPage = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.runGenomeSizeChart = new LiveCharts.WinForms.CartesianChart();
             this.runFitnessChart = new LiveCharts.WinForms.CartesianChart();
             this.panel1 = new System.Windows.Forms.Panel();
             this.runTimeLabel = new System.Windows.Forms.Label();
@@ -77,6 +78,8 @@
             this.genomeTabFitnessLabel = new System.Windows.Forms.Label();
             this.genomeNameLabel = new System.Windows.Forms.Label();
             this.runSettingsTabPage = new System.Windows.Forms.TabPage();
+            this.gameInstancesUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label5 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
             this.populationSizeUpDown = new System.Windows.Forms.NumericUpDown();
@@ -89,9 +92,6 @@
             this.runBackgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.runTimer = new System.Windows.Forms.Timer(this.components);
             this.openFirstGenFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.label5 = new System.Windows.Forms.Label();
-            this.gameInstancesUpDown = new System.Windows.Forms.NumericUpDown();
-            this.runGenomeSizeChart = new LiveCharts.WinForms.CartesianChart();
             this.mainMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -112,9 +112,9 @@
             this.panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.genomePictureBox)).BeginInit();
             this.runSettingsTabPage.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gameInstancesUpDown)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.populationSizeUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gameInstancesUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // mainMenuStrip
@@ -297,6 +297,15 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(577, 495);
             this.tableLayoutPanel1.TabIndex = 4;
+            // 
+            // runGenomeSizeChart
+            // 
+            this.runGenomeSizeChart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.runGenomeSizeChart.Location = new System.Drawing.Point(3, 250);
+            this.runGenomeSizeChart.Name = "runGenomeSizeChart";
+            this.runGenomeSizeChart.Size = new System.Drawing.Size(571, 242);
+            this.runGenomeSizeChart.TabIndex = 2;
+            this.runGenomeSizeChart.Text = "+";
             // 
             // runFitnessChart
             // 
@@ -595,6 +604,27 @@
             this.runSettingsTabPage.Text = "Run Settings";
             this.runSettingsTabPage.UseVisualStyleBackColor = true;
             // 
+            // gameInstancesUpDown
+            // 
+            this.gameInstancesUpDown.Location = new System.Drawing.Point(98, 32);
+            this.gameInstancesUpDown.Name = "gameInstancesUpDown";
+            this.gameInstancesUpDown.Size = new System.Drawing.Size(49, 20);
+            this.gameInstancesUpDown.TabIndex = 7;
+            this.gameInstancesUpDown.Value = new decimal(new int[] {
+            9,
+            0,
+            0,
+            0});
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 34);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(86, 13);
+            this.label5.TabIndex = 6;
+            this.label5.Text = "Game instances:";
+            // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.label4);
@@ -704,36 +734,6 @@
             // 
             this.openFirstGenFileDialog.Filter = "JSON files|*.json|All files|*.*";
             // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 34);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(86, 13);
-            this.label5.TabIndex = 6;
-            this.label5.Text = "Game instances:";
-            // 
-            // gameInstancesUpDown
-            // 
-            this.gameInstancesUpDown.Location = new System.Drawing.Point(98, 32);
-            this.gameInstancesUpDown.Name = "gameInstancesUpDown";
-            this.gameInstancesUpDown.Size = new System.Drawing.Size(49, 20);
-            this.gameInstancesUpDown.TabIndex = 7;
-            this.gameInstancesUpDown.Value = new decimal(new int[] {
-            9,
-            0,
-            0,
-            0});
-            // 
-            // runGenomeSizeChart
-            // 
-            this.runGenomeSizeChart.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.runGenomeSizeChart.Location = new System.Drawing.Point(3, 250);
-            this.runGenomeSizeChart.Name = "runGenomeSizeChart";
-            this.runGenomeSizeChart.Size = new System.Drawing.Size(571, 242);
-            this.runGenomeSizeChart.TabIndex = 2;
-            this.runGenomeSizeChart.Text = "+";
-            // 
             // GenomeViewForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -772,10 +772,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.genomePictureBox)).EndInit();
             this.runSettingsTabPage.ResumeLayout(false);
             this.runSettingsTabPage.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gameInstancesUpDown)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.populationSizeUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gameInstancesUpDown)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

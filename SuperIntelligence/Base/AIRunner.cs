@@ -8,13 +8,13 @@ using System.Threading;
 using SuperIntelligence;
 using SuperIntelligence.Game;
 
+using static SuperIntelligence.Data.Constants;
+
 namespace SuperIntelligence
 {
     class AIRunner
     {
-        public static int NetworkInputs = 13;
-        public static int NetworkOutputs = 2;
-        public static double ButtonDownThreshold = 0;
+        public static double ButtonDownThreshold = 0.7;
         public static int DefaultTicksPerSecond = 50;
 
         public GameManager Manager;
@@ -60,7 +60,7 @@ namespace SuperIntelligence
                 input[index] = distance;
 
                 // add angle between player and slot to input
-                int slotAngle = (i * (360/slotCount)) + 30;
+                int slotAngle = (i * (360/slotCount)) + (180/slotCount);
                 int playerAngle = Game.PlayerAngle;
                 int playerSlotAngle = Math.Max(slotAngle, playerAngle) - Math.Min(slotAngle, playerAngle);
                 if (playerSlotAngle > 180)
@@ -78,6 +78,10 @@ namespace SuperIntelligence
             // slots, making it "cyclical"
             for (int i = slotCount * 2; i < 12; i++)
                 input[i] = input[i - (slotCount * 2)];
+
+
+            double playerAngleRad = ((Math.PI / 180) * Game.PlayerAngle);
+            input[NetworkInputs - 2] = playerAngleRad;
 
             // add the final bias parameter
             input[NetworkInputs - 1] = 1;
@@ -99,7 +103,7 @@ namespace SuperIntelligence
 
         public void DoGameRun()
         {
-            //Individual.Prepare();
+            Individual.Prepare();
 
             // Set the game window's title
             Game.SetWindowTitle("Gen " + Individual.Generation + ":" + Individual.Index);
@@ -177,7 +181,7 @@ namespace SuperIntelligence
 
             // save the individual's fitness
             //Individual.Fitness = fitness + Game.GameTime;
-            Individual.Fitness = Game.GameTime / 60.0;
+            Individual.Fitness = Game.GameTime + fitness;
         }
     }
 }

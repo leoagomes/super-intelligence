@@ -58,16 +58,15 @@ namespace SuperIntelligence.NEAT
                 // create a new species for the new genome with a random representative from
                 // the current species
                 Species newSpecies = new Species(Choose(oldSpecies.Members.ToArray()));
-                newSpecies.AddGenome(newSpecies.Representative);
                 next.Species.Add(newSpecies);
 
                 var sortedMembers = oldSpecies.Members
                     .OrderByDescending(m => AdjustedFitness(m, m.Fitness));
 
-                if (oldSpecies.Members.Count > 5)
-                    next.AddGenome(sortedMembers.First());
-
                 Genome top = sortedMembers.First();
+
+                if (oldSpecies.Members.Count > 5)
+                    next.AddGenome(top);
 
                 foreach (Genome genome in oldSpecies.Members)
                 {

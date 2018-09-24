@@ -198,7 +198,7 @@ namespace SuperIntelligence
             Enum.GetNames(typeof(Game.GameModes))
                 .ToList()
                 .ForEach(name => gameModeComboBox.Items.Add(name));
-            gameModeComboBox.SelectedIndex = 0;
+            gameModeComboBox.SelectedIndex = (int)Game.GameModes.Hexagonest;
 
             // bootstrap run fitness chart
             runFitnessChart.Series = new SeriesCollection
@@ -420,6 +420,7 @@ namespace SuperIntelligence
             }
             else if (node.Tag is Generation)
             {
+
                 Generation generation = node.Tag as Generation;
 
                 // pie chart
@@ -430,6 +431,7 @@ namespace SuperIntelligence
                 foreach (Species s in generation.Species)
                 {
                     generationGenomePerSpeciesChart.Series.Add(new PieSeries
+
                     {
                         Title = s.Id.ToString(),
                         Values = new ChartValues<double> { s.Members.Count },
@@ -457,6 +459,7 @@ namespace SuperIntelligence
 
                     double speciesMax = s.Members.Max(g => g.Fitness);
                     double speciesMin = s.Members.Min(g => g.Fitness);
+
                     series.Values.Add(new OhlcPoint(speciesAverageFitness, speciesMax, speciesMin, speciesAverageFitness));
                 }
 
