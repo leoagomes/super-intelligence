@@ -8,10 +8,9 @@ using static SuperIntelligence.Random.Random;
 
 namespace SuperIntelligence.NEAT
 {
-    class Genome
+    class Genome : IComparable<Genome>
     {
         public int Id;
-        public int NextNodeId = 0;
         public double Fitness = 0;
 
         public Dictionary<int, Connection> Connections;
@@ -30,6 +29,11 @@ namespace SuperIntelligence.NEAT
 
         public Connection GetConnection(int innovation) =>
             Connections[innovation];
+
+        public int Size
+        {
+            get => Connections.Count + Nodes.Count;
+        }
         #endregion
 
         #region Helpers
@@ -76,7 +80,7 @@ namespace SuperIntelligence.NEAT
 
             // marks are a way of preventing cycles in the graph since
             // all ouputs must be from a higher mark than the input, which
-            Node node = new Node(NextNodeId++, NodeType.Hidden, input.Mark + 1);
+            Node node = new Node(generator.Innovate(), NodeType.Hidden, input.Mark + 1);
 
             // create the two new connections
             Connection a = new Connection(input.Id, node.Id, 1, true, generator.Innovate());
@@ -125,8 +129,6 @@ namespace SuperIntelligence.NEAT
         {
             Genome copy = new Genome(Id);
 
-            copy.NextNodeId = NextNodeId;
-
             foreach (var entry in Connections)
                 copy.Connections.Add(entry.Key, entry.Value.Copy());
 
@@ -164,8 +166,6 @@ namespace SuperIntelligence.NEAT
 
             foreach (Node node in fit.Nodes.Values)
                 child.AddNode(node);
-
-            child.NextNodeId = fit.NextNodeId;
 
             return child;
         }
@@ -210,6 +210,10 @@ namespace SuperIntelligence.NEAT
             return (((ExcessCoefficient * excess) + (DisjointCoefficient * disjoint)) / maxGenes) + 
                 WeightCoefficient * meanWeightDiff;
         }
+
+        public int CompareTo(Genome other) =>
+            Fitness.CompareTo(other.Fitness);
+
         #endregion
     }
 }

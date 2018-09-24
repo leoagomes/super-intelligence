@@ -53,7 +53,7 @@ namespace SuperIntelligence
                 {
                     if (wall.Slot == i)
                     {
-                        distance = wall.Distance / 1000f;
+                        distance = (wall.Distance - 150) / 1000f;
                         break;
                     }
                 }
@@ -176,7 +176,8 @@ namespace SuperIntelligence
             Game.MouseDown = false;
 
             // save the individual's fitness
-            Individual.Fitness = fitness + Game.GameTime;
+            //Individual.Fitness = fitness + Game.GameTime;
+            Individual.Fitness = Game.GameTime / 60.0;
         }
     }
 }

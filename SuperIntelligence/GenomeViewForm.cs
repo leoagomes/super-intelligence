@@ -36,6 +36,7 @@ namespace SuperIntelligence
         ChartValues<ObservablePoint> runAvgFitnessValues = new ChartValues<ObservablePoint>();
         ChartValues<ObservablePoint> runAvgGenomeSizeValues = new ChartValues<ObservablePoint>();
         ChartValues<ObservablePoint> runMaxGenomeSizeValues = new ChartValues<ObservablePoint>();
+        ChartValues<ObservablePoint> runBestGenomeSizeValues = new ChartValues<ObservablePoint>();
 
         Dictionary<Genome, TreeNode> genomeMap = new Dictionary<Genome, TreeNode>();
 
@@ -77,6 +78,7 @@ namespace SuperIntelligence
 
             runAvgFitnessValues.Clear();
             runMaxFitnessValues.Clear();
+            runBestGenomeSizeValues.Clear();
 
             runAvgGenomeSizeValues.Clear();
             runMaxGenomeSizeValues.Clear();
@@ -106,18 +108,20 @@ namespace SuperIntelligence
         {
             // add fitness data to run graphs
             var allGenomes = generation.Species.SelectMany(s => s.Members);
+            var bestGenome = allGenomes.Max();
             double meanFitness = allGenomes.Average(g => g.Fitness);
-            double maxFitness = allGenomes.Max(g => g.Fitness);
+            double maxFitness = bestGenome.Fitness;
 
             runAvgFitnessValues.Add(new ObservablePoint(generation.Number, meanFitness));
             runMaxFitnessValues.Add(new ObservablePoint(generation.Number, maxFitness));
 
             // add genome size data to run graphs
-            double meanSize = allGenomes.Average(g => g.Connections.Count + g.Nodes.Count);
-            double maxSize = allGenomes.Max(g => g.Connections.Count + g.Nodes.Count);
+            double meanSize = allGenomes.Average(g => g.Size);
+            double maxSize = allGenomes.Max(g => g.Size);
 
             runAvgGenomeSizeValues.Add(new ObservablePoint(generation.Number, meanSize));
             runMaxGenomeSizeValues.Add(new ObservablePoint(generation.Number, maxSize));
+            runBestGenomeSizeValues.Add(new ObservablePoint(generation.Number, bestGenome.Size));
         }
 
         private void MarkUntested(Individual individual)
@@ -223,6 +227,11 @@ namespace SuperIntelligence
                 {
                     Values = runMaxGenomeSizeValues,
                     Title = "Maximum Genome Size"
+                },
+                new LineSeries
+                {
+                    Values = runBestGenomeSizeValues,
+                    Title = "Best Genome Size"
                 }
             };
         }
@@ -500,6 +509,11 @@ namespace SuperIntelligence
                     }
                 });
                 generationGenomeSizeChart.Series = new SeriesCollection { series };
+            }
+
+            if (e.Node.Parent != null)
+            {
+                runTreeView_AfterSelect(sender, new TreeViewEventArgs(e.Node.Parent));
             }
         }
     }

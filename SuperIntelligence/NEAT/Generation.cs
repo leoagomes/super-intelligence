@@ -43,7 +43,7 @@ namespace SuperIntelligence.NEAT
             return fitness / sharing;
         }
 
-        public static double InterspeciesMatingChance = 0.001;
+        public static double InterspeciesMatingChance = 0.01;
         public Generation Next(InnovationGenerator generator)
         {
             Generation next = new Generation(Number + 1);
@@ -51,17 +51,37 @@ namespace SuperIntelligence.NEAT
 
             foreach (Species oldSpecies in Species)
             {
+                // skip species with no members
+                if (oldSpecies.Members.Count <= 0)
+                    continue;
+
+                // create a new species for the new genome with a random representative from
+                // the current species
                 Species newSpecies = new Species(Choose(oldSpecies.Members.ToArray()));
                 newSpecies.AddGenome(newSpecies.Representative);
                 next.Species.Add(newSpecies);
 
-                var topMembers = oldSpecies.Members
-                    .OrderByDescending(m => AdjustedFitness(m, m.Fitness))
-                    .Take((int)Math.Sqrt(oldSpecies.Members.Count));
+                var sortedMembers = oldSpecies.Members
+                    .OrderByDescending(m => AdjustedFitness(m, m.Fitness));
 
                 if (oldSpecies.Members.Count > 5)
-                    next.AddGenome(topMembers.First());
+                    next.AddGenome(sortedMembers.First());
 
+                Genome top = sortedMembers.First();
+
+                foreach (Genome genome in oldSpecies.Members)
+                {
+                    if (top == genome)
+                        continue;
+
+                    Genome child = Genome.CrossOver(top, genome);
+                    child.Mutate(generator);
+                    child.Id = genomeId++;
+                    next.AddGenome(child);
+                }
+
+                /*
+                 * this code takes the top sqrt of members and crosses them
                 foreach (Genome genome in topMembers)
                 {
                     Genome mutation = genome.Copy();
@@ -84,6 +104,7 @@ namespace SuperIntelligence.NEAT
                         next.AddGenome(cross);
                     }
                 }
+                */
             }
 
             // TODO: maybe rethink this

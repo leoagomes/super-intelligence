@@ -60,23 +60,27 @@ namespace SuperIntelligence
             int inputs = 13;
             int outputs = 2;
 
+            List<int> inputIds = new List<int>(inputs);
+
             // input nodes
             for (int i = 0; i < inputs; i++)
             {
-                genome.AddNode(new Node(i, NodeType.Input, int.MinValue));
+                int currentId = generator.Innovate();
+                inputIds.Add(currentId);
+                genome.AddNode(new Node(currentId, NodeType.Input, int.MinValue));
             }
 
             // output nodes
             for (int i = 0; i < outputs; i++)
             {
-                genome.AddNode(new Node(i + inputs, NodeType.Output, int.MaxValue));
+                int currentId = generator.Innovate();
+                genome.AddNode(new Node(currentId, NodeType.Output, int.MaxValue));
 
                 for (int j = 0; j < inputs; j++)
                 {
-                    genome.AddConnection(new Connection(j, i + inputs, Double() * 4f - 2f, true, generator.Innovate()));
+                    genome.AddConnection(new Connection(inputIds[j], currentId, Double() * 4f - 2f, true, generator.Innovate()));
                 }
             }
-            genome.NextNodeId = inputs + outputs;
 
             Species original = new Species(genome);
             generation.Species.Add(original);
