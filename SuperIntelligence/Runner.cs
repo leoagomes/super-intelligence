@@ -38,11 +38,13 @@ namespace SuperIntelligence
 
         public delegate void IndividualDelegate(Individual individual);
         public delegate void GenerationDelegate(Generation generation);
+        public delegate void LoopFinishDelegate();
 
         public event IndividualDelegate OnUntestedIndividual = delegate { };
         public event IndividualDelegate OnIndividualTested = delegate { };
         public event GenerationDelegate OnNextGeneration = delegate { };
         public event GenerationDelegate OnGenerationFinished = delegate { };
+        public event LoopFinishDelegate OnLoopFinish = delegate { };
 
         public Runner(string gamePath, int gameInstances)
         {
@@ -233,9 +235,9 @@ namespace SuperIntelligence
                 TestedIndividuals = new ConcurrentQueue<Individual>();
             }
 
+            OnLoopFinish();
             // terminate all game processes
             KillGameInstances();
         }
-
     }
 }

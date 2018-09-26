@@ -39,6 +39,7 @@ namespace SuperIntelligence
         ChartValues<ObservablePoint> runBestGenomeSizeValues = new ChartValues<ObservablePoint>();
 
         Dictionary<Genome, TreeNode> genomeMap = new Dictionary<Genome, TreeNode>();
+        Runner runner;
 
         public GenomeViewForm()
         {
@@ -187,6 +188,24 @@ namespace SuperIntelligence
             memoryStream.Position = 0;
             return memoryStream;
         }
+
+        // changes some startStopButton parameters
+        private void changeStartStopButton(bool enabled, string text)
+        {
+            startStopRunButton.Text = text;
+            startStopRunButton.Enabled = enabled;
+        }
+
+        // called when the loop at Runner ends, it stops the timer, cancel async work and change the button to start
+        private void ChangeWaitButton()
+        {
+            if (runner != null && runner.ShouldStop)
+            {
+                changeStartStopButton(true, "Start");
+                runTimer.Stop();
+                runBackgroundWorker.CancelAsync();
+            }
+        }
         #endregion
 
         #region UI Methods
@@ -261,6 +280,7 @@ namespace SuperIntelligence
 
         private void startStopRunButton_Click(object sender, EventArgs e)
         {
+            // when the user press the Start button
             if (!runStarted)
             {
                 // clear all data in UI
@@ -287,16 +307,20 @@ namespace SuperIntelligence
                 runStartTime = DateTime.Now;
                 runTimer.Start();
 
-                startStopRunButton.Text = "Stop";
+                changeStartStopButton(true, "Stop");
                 runStarted = true;
             }
+
+            // when the user press the Stop button
             else
             {
-                runTimer.Stop();
+                // stopping the runner loop
+                if (runner != null)
+                {
+                    runner.ShouldStop = true;
+                }
 
-                runBackgroundWorker.CancelAsync();
-
-                startStopRunButton.Text = "Start";
+                changeStartStopButton(false, "Wait...");
                 runStarted = false;
             }
         }
@@ -320,7 +344,7 @@ namespace SuperIntelligence
             string generationFileName = e.Argument as string;
             Generation firstGen;
 
-            Runner runner = new Runner(applicationSettings.GameFile, (int)gameInstancesUpDown.Value);
+            runner = new Runner(applicationSettings.GameFile, (int)gameInstancesUpDown.Value);
 
             if (generationFileName != string.Empty)
             {
@@ -337,6 +361,7 @@ namespace SuperIntelligence
             runner.OnGenerationFinished += Runner_OnGenerationFinished;
             runner.OnUntestedIndividual += Runner_OnUntestedIndividual;
             runner.OnIndividualTested += Runner_OnIndividualTested;
+            runner.OnLoopFinish += Runner_OnLoopFinish;
 
             runner.DoRun(gameMode, firstGen);
         }
@@ -359,6 +384,11 @@ namespace SuperIntelligence
         private void Runner_OnNextGeneration(Generation generation)
         {
             runTreeView.Invoke(new Runner.GenerationDelegate(AddGeneration), new object[] { generation });
+        }
+
+        private void Runner_OnLoopFinish()
+        {
+            runTreeView.Invoke(new Runner.LoopFinishDelegate(ChangeWaitButton));
         }
 
         private void runTreeView_AfterSelect(object sender, TreeViewEventArgs e)
