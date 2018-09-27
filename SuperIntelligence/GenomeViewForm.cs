@@ -40,6 +40,7 @@ namespace SuperIntelligence
 
         Dictionary<Genome, TreeNode> genomeMap = new Dictionary<Genome, TreeNode>();
         Runner runner;
+        Individual bestIndividual = null;
 
         public GenomeViewForm()
         {
@@ -139,6 +140,25 @@ namespace SuperIntelligence
             {
                 genomeMap[individual.Genome].BackColor = Color.Transparent;
             }
+        }
+
+        private void BestGenome(Individual individual)
+        {
+            if (bestIndividual == null)
+            {
+                bestIndividual = individual;
+            }
+
+            if (individual.Fitness > bestIndividual.Fitness)
+            {
+                bestIndividual = individual;
+            }
+
+            // labels
+            // generation tab
+            generationBestGenomeLinkLabel.Text = "Best Genome Fitness: " + bestIndividual.Index.ToString();
+            // species tab
+            speciesTabBestGenomeLinkLabel.Text = "Best Genome Fitness: " + bestIndividual.Index.ToString();
         }
 
         private async Task<MemoryStream> MakeGenomeGraphImage(Genome genome)
@@ -339,6 +359,204 @@ namespace SuperIntelligence
         }
         #endregion
 
+        #region Runner Delegate Methods
+        private void Runner_OnIndividualTested(Individual individual)
+        {
+            runTreeView.Invoke(new Runner.IndividualDelegate(BestGenome), new object[] { individual });
+            runTreeView.Invoke(new Runner.IndividualDelegate(MarkTested), new object[] { individual });
+        }
+
+        private void Runner_OnUntestedIndividual(Individual individual)
+        {
+            runTreeView.Invoke(new Runner.IndividualDelegate(MarkUntested), new object[] { individual });
+        }
+
+        private void Runner_OnGenerationFinished(Generation generation)
+        {
+            runFitnessChart.Invoke(new Runner.GenerationDelegate(GenerationFinished), new object[] { generation });
+        }
+
+        private void Runner_OnNextGeneration(Generation generation)
+        {
+            runTreeView.Invoke(new Runner.GenerationDelegate(AddGeneration), new object[] { generation });
+            runTreeView.Invoke(new Runner.GenerationDelegate(generateGenerationTabDesign), new object[] { generation });
+        }
+
+        private void Runner_OnLoopFinish()
+        {
+            runTreeView.Invoke(new Runner.LoopFinishDelegate(ChangeWaitButton));
+        }
+        #endregion
+
+        #region Tab Design Methods
+        // Generate Genome tab: writes the genome id, its fitness and draws its graph 
+        private void generateGenomeTabDesign (Genome genome)
+        {
+            // statistics labels
+            genomeNameLabel.Text = "Genome " + genome.Id;
+            genomeTabFitnessLabel.Text = "Fitness: " + genome.Fitness;
+
+            genomePictureBox.UseWaitCursor = true;
+            MakeGenomeGraphImage(genome)
+                .ContinueWith(mem =>
+                {
+                    genomePictureBox.Invoke(new Action(() =>
+                    {
+                        genomePictureBox.Image = Image.FromStream(mem.Result);
+                        genomePictureBox.UseWaitCursor = false;
+                    }));
+                });
+        }
+
+        // Generate Species tab: 
+        private void generateSpeciesTabDesign(Species species)
+        {
+            Dictionary<double, int> counts = new Dictionary<double, int>();
+            ColumnSeries series = new ColumnSeries();
+
+            foreach (Genome g in species.Members)
+            {
+                double fitnessBucket = Math.Floor(g.Fitness / 10.0);
+
+                if (!counts.ContainsKey(fitnessBucket))
+                    counts[fitnessBucket] = 0;
+                counts[fitnessBucket]++;
+            }
+
+            speciesTabFitnessChart.Series.Clear();
+            speciesTabFitnessChart.AxisX.Clear();
+
+            var labels = counts.Keys.OrderBy(d => d);
+
+            speciesTabFitnessChart.AxisX.Add(new Axis
+            {
+                Title = "Fitness",
+                Labels = labels.Select(f => f.ToString()).ToList()
+            });
+
+            // creating the series
+            series.Values = new ChartValues<int>();
+            series.Title = "Species Fitness Distribution";
+            foreach (var index in labels)
+            {
+                series.Values.Add(counts[index]);
+            }
+
+            speciesTabFitnessChart.Series.Add(series);
+        }
+
+        // Generate Generation tab: 
+        private void generateGenerationTabDesign(Generation generation)
+        {
+            int genCount = 0;
+
+            foreach (Species s in generation.Species)
+            {
+                genCount += s.Members.Count;
+            }
+
+            // statistics labels
+            // since other tabs need general statistics from the generation, we modify them too 
+            // generation tab
+            genTabGenerationNameLabel.Text = "Generation " + generation.Number.ToString();
+            genTabSpeciesCountLabel.Text = "Species: " + generation.Species.Count.ToString();
+            genTabGenomeCountLabel.Text = "Genomes: " + genCount.ToString();
+            // species tab
+            speciesTabSpeciesCountLabel.Text = "Species: " + generation.Species.Count.ToString();
+            speciesTabGenomeCountLabel.Text = "Genomes: " + genCount.ToString();
+
+            // pie chart
+            generationGenomePerSpeciesChart.Series.Clear();
+            Func<ChartPoint, string> labelPoint = chartPoint =>
+                string.Format("{0} ({1:P})", chartPoint.Y, chartPoint.Participation);
+
+            foreach (Species s in generation.Species)
+            {
+                generationGenomePerSpeciesChart.Series.Add(new PieSeries
+
+                {
+                    Title = s.Id.ToString(),
+                    Values = new ChartValues<double> { s.Members.Count },
+                    DataLabels = true,
+                    LabelPoint = labelPoint
+                });
+            }
+
+            // fitness chart
+            generationFitnessChart.Series.Clear();
+            generationFitnessChart.AxisX.Clear();
+            generationFitnessChart.AxisY.Clear();
+
+            OhlcSeries series = new OhlcSeries
+            {
+                Title = "Fitness Distribution",
+                Values = new ChartValues<OhlcPoint>()
+            };
+            double globalMean = 0;
+
+            foreach (Species s in generation.Species)
+            {
+                double speciesAverageFitness = s.Members.Sum(g => g.Fitness) / s.Members.Count;
+                globalMean += speciesAverageFitness;
+
+                double speciesMax = s.Members.Max(g => g.Fitness);
+                double speciesMin = s.Members.Min(g => g.Fitness);
+
+                series.Values.Add(new OhlcPoint(speciesAverageFitness, speciesMax, speciesMin, speciesAverageFitness));
+            }
+
+            globalMean /= generation.Species.Count == 0 ? 1 : generation.Species.Count;
+
+            generationFitnessChart.AxisY.Add(new Axis
+            {
+                Sections = new SectionsCollection
+                    {
+                        new AxisSection
+                        {
+                            Value = globalMean,
+                            Stroke = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(21, 49, 49))
+                        }
+                    }
+            });
+            generationFitnessChart.Series = new SeriesCollection { series };
+
+            // genome size chart
+            generationGenomeSizeChart.Series.Clear();
+            generationGenomeSizeChart.AxisX.Clear();
+            generationGenomeSizeChart.AxisY.Clear();
+
+            series = new OhlcSeries
+            {
+                Values = new ChartValues<OhlcPoint>()
+            };
+            globalMean = 0;
+
+            foreach (Species s in generation.Species)
+            {
+                double avgGenomeSize = s.Members.Sum(g => g.Connections.Count + g.Nodes.Count) / s.Members.Count;
+                double minGenomeSize = s.Members.Min(g => g.Connections.Count + g.Nodes.Count);
+                double maxGenomeSize = s.Members.Max(g => g.Connections.Count + g.Nodes.Count);
+
+                series.Values.Add(new OhlcPoint(avgGenomeSize, maxGenomeSize, minGenomeSize, avgGenomeSize));
+            }
+
+            globalMean /= generation.Species.Count == 0 ? 1 : generation.Species.Count;
+
+            generationGenomeSizeChart.AxisY.Add(new Axis
+            {
+                Sections = new SectionsCollection
+                    {
+                        new AxisSection
+                        {
+                            Value = globalMean,
+                            Stroke = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(21, 49, 49))
+                        }
+                    }
+            });
+            generationGenomeSizeChart.Series = new SeriesCollection { series };
+        }
+        #endregion
+
         private void runBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             string generationFileName = e.Argument as string;
@@ -366,188 +584,49 @@ namespace SuperIntelligence
             runner.DoRun(gameMode, firstGen);
         }
 
-        private void Runner_OnIndividualTested(Individual individual)
-        {
-            runTreeView.Invoke(new Runner.IndividualDelegate(MarkTested), new object[] { individual });
-        }
-
-        private void Runner_OnUntestedIndividual(Individual individual)
-        {
-            runTreeView.Invoke(new Runner.IndividualDelegate(MarkUntested), new object[] { individual });
-        }
-
-        private void Runner_OnGenerationFinished(Generation generation)
-        {
-            runFitnessChart.Invoke(new Runner.GenerationDelegate(GenerationFinished), new object[] { generation });
-        }
-
-        private void Runner_OnNextGeneration(Generation generation)
-        {
-            runTreeView.Invoke(new Runner.GenerationDelegate(AddGeneration), new object[] { generation });
-        }
-
-        private void Runner_OnLoopFinish()
-        {
-            runTreeView.Invoke(new Runner.LoopFinishDelegate(ChangeWaitButton));
-        }
-
         private void runTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             TreeNode node = e.Node;
             if (node.Tag is Genome)
             {
                 Genome genome = node.Tag as Genome;
-                genomeNameLabel.Text = "Genome " + genome.Id;
-                genomeTabFitnessLabel.Text = "Fitness: " + genome.Fitness;
-
-                genomePictureBox.UseWaitCursor = true;
-                MakeGenomeGraphImage(genome)
-                    .ContinueWith(mem =>
-                    {
-                        genomePictureBox.Invoke(new Action(() =>
-                        {
-                            genomePictureBox.Image = Image.FromStream(mem.Result);
-                            genomePictureBox.UseWaitCursor = false;
-                        }));
-                    });
+                generateGenomeTabDesign(genome);
+                // changing to the genome tab
+                mainTabControl.SelectedTab = genomeTabPage;
             }
             else if (node.Tag is Species)
             {
                 Species species = node.Tag as Species;
+                generateSpeciesTabDesign(species);
 
-                Dictionary<double, int> counts = new Dictionary<double, int>();
-                foreach (Genome g in species.Members)
-                {
-                    double fitnessBucket = Math.Floor(g.Fitness / 10.0);
-
-                    if (!counts.ContainsKey(fitnessBucket))
-                        counts[fitnessBucket] = 0;
-                    counts[fitnessBucket]++;
-                }
-
-                speciesTabFitnessChart.Series.Clear();
-                speciesTabFitnessChart.AxisX.Clear();
-
-                ColumnSeries series = new ColumnSeries();
-                series.Title = "Species Fitness Distribution";
-
-                var labels = counts.Keys.OrderBy(d => d);
-
-                speciesTabFitnessChart.AxisX.Add(new Axis
-                {
-                    Title = "Fitness",
-                    Labels = labels.Select(f => f.ToString()).ToList()
-                });
-
-                series.Values = new ChartValues<int>();
-
-                foreach (var index in labels)
-                {
-                    series.Values.Add(counts[index]);
-                }
-
-                speciesTabFitnessChart.Series.Add(series);
             }
             else if (node.Tag is Generation)
             {
-
                 Generation generation = node.Tag as Generation;
-
-                // pie chart
-                generationGenomePerSpeciesChart.Series.Clear();
-                Func<ChartPoint, string> labelPoint = chartPoint =>
-                    string.Format("{0} ({1:P})", chartPoint.Y, chartPoint.Participation);
-
-                foreach (Species s in generation.Species)
-                {
-                    generationGenomePerSpeciesChart.Series.Add(new PieSeries
-
-                    {
-                        Title = s.Id.ToString(),
-                        Values = new ChartValues<double> { s.Members.Count },
-                        DataLabels = true,
-                        LabelPoint = labelPoint
-                    });
-                }
-
-                // fitness chart
-                generationFitnessChart.Series.Clear();
-                generationFitnessChart.AxisX.Clear();
-                generationFitnessChart.AxisY.Clear();
-
-                OhlcSeries series = new OhlcSeries
-                {
-                    Title = "Fitness Distribution",
-                    Values = new ChartValues<OhlcPoint>()
-                };
-                double globalMean = 0;
-
-                foreach (Species s in generation.Species)
-                {
-                    double speciesAverageFitness = s.Members.Sum(g => g.Fitness) / s.Members.Count;
-                    globalMean += speciesAverageFitness;
-
-                    double speciesMax = s.Members.Max(g => g.Fitness);
-                    double speciesMin = s.Members.Min(g => g.Fitness);
-
-                    series.Values.Add(new OhlcPoint(speciesAverageFitness, speciesMax, speciesMin, speciesAverageFitness));
-                }
-
-                globalMean /= generation.Species.Count == 0 ? 1 : generation.Species.Count;
-
-                generationFitnessChart.AxisY.Add(new Axis
-                {
-                    Sections = new SectionsCollection
-                    {
-                        new AxisSection
-                        {
-                            Value = globalMean,
-                            Stroke = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(21, 49, 49))
-                        }
-                    }
-                });
-                generationFitnessChart.Series = new SeriesCollection { series };
-
-                // genome size chart
-                generationGenomeSizeChart.Series.Clear();
-                generationGenomeSizeChart.AxisX.Clear();
-                generationGenomeSizeChart.AxisY.Clear();
-
-                series = new OhlcSeries
-                {
-                    Values = new ChartValues<OhlcPoint>()
-                };
-                globalMean = 0;
-
-                foreach (Species s in generation.Species)
-                {
-                    double avgGenomeSize = s.Members.Sum(g => g.Connections.Count + g.Nodes.Count) / s.Members.Count;
-                    double minGenomeSize = s.Members.Min(g => g.Connections.Count + g.Nodes.Count);
-                    double maxGenomeSize = s.Members.Max(g => g.Connections.Count + g.Nodes.Count);
-
-                    series.Values.Add(new OhlcPoint(avgGenomeSize, maxGenomeSize, minGenomeSize, avgGenomeSize));
-                }
-
-                globalMean /= generation.Species.Count == 0 ? 1 : generation.Species.Count;
-
-                generationGenomeSizeChart.AxisY.Add(new Axis
-                {
-                    Sections = new SectionsCollection
-                    {
-                        new AxisSection
-                        {
-                            Value = globalMean,
-                            Stroke = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(21, 49, 49))
-                        }
-                    }
-                });
-                generationGenomeSizeChart.Series = new SeriesCollection { series };
+                generateGenerationTabDesign(generation);
             }
 
             if (e.Node.Parent != null)
             {
                 runTreeView_AfterSelect(sender, new TreeViewEventArgs(e.Node.Parent));
             }
+        }
+
+        // Best Genome Fitness click handler, changes the active tab to 'Genome'
+        private void generationBestGenomeLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            // changing to the genome tab
+            mainTabControl.SelectedTab = genomeTabPage;
+            // regenerating genome tab
+            generateGenomeTabDesign(bestIndividual.Genome);
+        }
+
+        private void speciesTabBestGenomeLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            // changing to the genome tab
+            mainTabControl.SelectedTab = genomeTabPage;
+            // regenerating genome tab
+            generateGenomeTabDesign(bestIndividual.Genome);
         }
     }
 }

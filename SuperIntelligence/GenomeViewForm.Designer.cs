@@ -62,16 +62,16 @@
             this.generationGenomeSizeChart = new LiveCharts.WinForms.CartesianChart();
             this.panel2 = new System.Windows.Forms.Panel();
             this.generationBestGenomeLinkLabel = new System.Windows.Forms.LinkLabel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.generationNameLabel = new System.Windows.Forms.Label();
-            this.speciesCountLabel = new System.Windows.Forms.Label();
+            this.genTabGenomeCountLabel = new System.Windows.Forms.Label();
+            this.genTabGenerationNameLabel = new System.Windows.Forms.Label();
+            this.genTabSpeciesCountLabel = new System.Windows.Forms.Label();
             this.speciesTabPage = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.speciesTabFitnessChart = new LiveCharts.WinForms.CartesianChart();
             this.panel3 = new System.Windows.Forms.Panel();
             this.speciesTabBestGenomeLinkLabel = new System.Windows.Forms.LinkLabel();
             this.speciesTabGenomeCountLabel = new System.Windows.Forms.Label();
-            this.speciesNameLabel = new System.Windows.Forms.Label();
+            this.speciesTabSpeciesCountLabel = new System.Windows.Forms.Label();
             this.genomeTabPage = new System.Windows.Forms.TabPage();
             this.panel4 = new System.Windows.Forms.Panel();
             this.genomePictureBox = new System.Windows.Forms.PictureBox();
@@ -419,9 +419,9 @@
             // panel2
             // 
             this.panel2.Controls.Add(this.generationBestGenomeLinkLabel);
-            this.panel2.Controls.Add(this.label1);
-            this.panel2.Controls.Add(this.generationNameLabel);
-            this.panel2.Controls.Add(this.speciesCountLabel);
+            this.panel2.Controls.Add(this.genTabGenomeCountLabel);
+            this.panel2.Controls.Add(this.genTabGenerationNameLabel);
+            this.panel2.Controls.Add(this.genTabSpeciesCountLabel);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel2.Location = new System.Drawing.Point(3, 3);
             this.panel2.Name = "panel2";
@@ -437,33 +437,34 @@
             this.generationBestGenomeLinkLabel.TabIndex = 2;
             this.generationBestGenomeLinkLabel.TabStop = true;
             this.generationBestGenomeLinkLabel.Text = "Best Genome Fitness: 0000000";
+            this.generationBestGenomeLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.generationBestGenomeLinkLabel_LinkClicked);
             // 
-            // label1
+            // genTabGenomeCountLabel
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(183, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(82, 13);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Genomes: 0000";
+            this.genTabGenomeCountLabel.AutoSize = true;
+            this.genTabGenomeCountLabel.Location = new System.Drawing.Point(183, 0);
+            this.genTabGenomeCountLabel.Name = "genTabGenomeCountLabel";
+            this.genTabGenomeCountLabel.Size = new System.Drawing.Size(82, 13);
+            this.genTabGenomeCountLabel.TabIndex = 2;
+            this.genTabGenomeCountLabel.Text = "Genomes: 0000";
             // 
-            // generationNameLabel
+            // genTabGenerationNameLabel
             // 
-            this.generationNameLabel.AutoSize = true;
-            this.generationNameLabel.Location = new System.Drawing.Point(3, 0);
-            this.generationNameLabel.Name = "generationNameLabel";
-            this.generationNameLabel.Size = new System.Drawing.Size(99, 13);
-            this.generationNameLabel.TabIndex = 0;
-            this.generationNameLabel.Text = "Generation #00000";
+            this.genTabGenerationNameLabel.AutoSize = true;
+            this.genTabGenerationNameLabel.Location = new System.Drawing.Point(3, 0);
+            this.genTabGenerationNameLabel.Name = "genTabGenerationNameLabel";
+            this.genTabGenerationNameLabel.Size = new System.Drawing.Size(99, 13);
+            this.genTabGenerationNameLabel.TabIndex = 0;
+            this.genTabGenerationNameLabel.Text = "Generation #00000";
             // 
-            // speciesCountLabel
+            // genTabSpeciesCountLabel
             // 
-            this.speciesCountLabel.AutoSize = true;
-            this.speciesCountLabel.Location = new System.Drawing.Point(108, 0);
-            this.speciesCountLabel.Name = "speciesCountLabel";
-            this.speciesCountLabel.Size = new System.Drawing.Size(69, 13);
-            this.speciesCountLabel.TabIndex = 1;
-            this.speciesCountLabel.Text = "Species: 000";
+            this.genTabSpeciesCountLabel.AutoSize = true;
+            this.genTabSpeciesCountLabel.Location = new System.Drawing.Point(108, 0);
+            this.genTabSpeciesCountLabel.Name = "genTabSpeciesCountLabel";
+            this.genTabSpeciesCountLabel.Size = new System.Drawing.Size(69, 13);
+            this.genTabSpeciesCountLabel.TabIndex = 1;
+            this.genTabSpeciesCountLabel.Text = "Species: 000";
             // 
             // speciesTabPage
             // 
@@ -503,7 +504,7 @@
             // 
             this.panel3.Controls.Add(this.speciesTabBestGenomeLinkLabel);
             this.panel3.Controls.Add(this.speciesTabGenomeCountLabel);
-            this.panel3.Controls.Add(this.speciesNameLabel);
+            this.panel3.Controls.Add(this.speciesTabSpeciesCountLabel);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel3.Location = new System.Drawing.Point(0, 0);
             this.panel3.Name = "panel3";
@@ -519,6 +520,7 @@
             this.speciesTabBestGenomeLinkLabel.TabIndex = 2;
             this.speciesTabBestGenomeLinkLabel.TabStop = true;
             this.speciesTabBestGenomeLinkLabel.Text = "Best Genome Fitness: 000000";
+            this.speciesTabBestGenomeLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.speciesTabBestGenomeLinkLabel_LinkClicked);
             // 
             // speciesTabGenomeCountLabel
             // 
@@ -529,14 +531,14 @@
             this.speciesTabGenomeCountLabel.TabIndex = 1;
             this.speciesTabGenomeCountLabel.Text = "Genomes: 0000";
             // 
-            // speciesNameLabel
+            // speciesTabSpeciesCountLabel
             // 
-            this.speciesNameLabel.AutoSize = true;
-            this.speciesNameLabel.Location = new System.Drawing.Point(3, 2);
-            this.speciesNameLabel.Name = "speciesNameLabel";
-            this.speciesNameLabel.Size = new System.Drawing.Size(73, 13);
-            this.speciesNameLabel.TabIndex = 0;
-            this.speciesNameLabel.Text = "Species #000";
+            this.speciesTabSpeciesCountLabel.AutoSize = true;
+            this.speciesTabSpeciesCountLabel.Location = new System.Drawing.Point(3, 2);
+            this.speciesTabSpeciesCountLabel.Name = "speciesTabSpeciesCountLabel";
+            this.speciesTabSpeciesCountLabel.Size = new System.Drawing.Size(73, 13);
+            this.speciesTabSpeciesCountLabel.TabIndex = 0;
+            this.speciesTabSpeciesCountLabel.Text = "Species #000";
             // 
             // genomeTabPage
             // 
@@ -807,10 +809,10 @@
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem lastGenerationToolStripMenuItem;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Label generationNameLabel;
-        private System.Windows.Forms.Label speciesCountLabel;
+        private System.Windows.Forms.Label genTabGenerationNameLabel;
+        private System.Windows.Forms.Label genTabSpeciesCountLabel;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label genTabGenomeCountLabel;
         private LiveCharts.WinForms.CartesianChart generationFitnessChart;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private LiveCharts.WinForms.PieChart generationGenomePerSpeciesChart;
@@ -821,7 +823,7 @@
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.LinkLabel speciesTabBestGenomeLinkLabel;
         private System.Windows.Forms.Label speciesTabGenomeCountLabel;
-        private System.Windows.Forms.Label speciesNameLabel;
+        private System.Windows.Forms.Label speciesTabSpeciesCountLabel;
         private System.Windows.Forms.PictureBox genomePictureBox;
         private System.Windows.Forms.Label genomeTabFitnessLabel;
         private System.Windows.Forms.Label genomeNameLabel;
