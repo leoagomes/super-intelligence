@@ -51,5 +51,8 @@ namespace SuperIntelligence
             Individual child = new Individual(Genome.CrossOver(fit, other), generation);
             return child;
         }
+
+        public override string ToString() =>
+            "Individual[Index=" + Index + ", Fitness=" + Fitness + ", Genome=" + Genome + "]";
     }
 }

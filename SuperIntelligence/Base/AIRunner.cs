@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 
-using SuperIntelligence;
 using SuperIntelligence.Game;
 
 using static SuperIntelligence.Data.Constants;
@@ -14,6 +13,7 @@ namespace SuperIntelligence
 {
     class AIRunner
     {
+        public static slf4net.ILogger logger = slf4net.LoggerFactory.GetLogger(typeof(AIRunner));
         public static double ButtonDownThreshold = 0.7;
         public static int DefaultTicksPerSecond = 50;
 
@@ -99,6 +99,21 @@ namespace SuperIntelligence
             }
 
             return farthestSlot;
+        }
+
+        public void DoSafeRun()
+        {
+            try
+            {
+                DoGameRun();
+            }
+            catch (Exception e)
+            {
+                logger.Error("Exception caught trying to do an AIRunner Run.\nIndividual was: " + Individual);
+                logger.Error("Exception caught was: " + e);
+                logger.Warn("Setting failed individual fitness to minimum.");
+                Individual.Fitness = int.MinValue;
+            }
         }
 
         public void DoGameRun()
