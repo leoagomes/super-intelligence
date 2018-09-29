@@ -22,6 +22,7 @@ using LiveCharts.Defaults;
 
 using SuperIntelligence.NEAT;
 using SuperIntelligence.Other;
+using SuperIntelligence.Data;
 
 namespace SuperIntelligence
 {
@@ -41,10 +42,12 @@ namespace SuperIntelligence
         Dictionary<Genome, TreeNode> genomeMap = new Dictionary<Genome, TreeNode>();
         Runner runner;
         Individual bestIndividual = null;
+        RunSettings settings;
 
         public GenomeViewForm()
         {
             InitializeComponent();
+            settings = new RunSettings();
         }
 
         #region Helper Methods
@@ -285,6 +288,7 @@ namespace SuperIntelligence
             }
         }
 
+        // 'Run Settings' -> 'Auto-generate first generation' check box handler
         private void randomFirstGenCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             CheckBox box = sender as CheckBox;
@@ -385,6 +389,18 @@ namespace SuperIntelligence
         private void Runner_OnLoopFinish()
         {
             runTreeView.Invoke(new Runner.LoopFinishDelegate(ChangeWaitButton));
+        }
+        #endregion
+
+        #region RunSettings Delegate Methods
+        private void RunSettings_ReadSettings()
+        {
+
+        }
+
+        private void RunSettings_WriteSettings()
+        {
+
         }
         #endregion
 
@@ -557,33 +573,7 @@ namespace SuperIntelligence
         }
         #endregion
 
-        private void runBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            string generationFileName = e.Argument as string;
-            Generation firstGen;
-
-            runner = new Runner(applicationSettings.GameFile, (int)gameInstancesUpDown.Value);
-
-            if (generationFileName != string.Empty)
-            {
-                firstGen = JsonConvert.DeserializeObject<Generation>(File.ReadAllText(generationFileName));
-            }
-            else
-            {
-                firstGen = Runner.MakeFirstGeneration(runner.InnovationGenerator, (int)populationSizeUpDown.Value);
-            }
-
-            Runner_OnNextGeneration(firstGen);
-
-            runner.OnNextGeneration += Runner_OnNextGeneration;
-            runner.OnGenerationFinished += Runner_OnGenerationFinished;
-            runner.OnUntestedIndividual += Runner_OnUntestedIndividual;
-            runner.OnIndividualTested += Runner_OnIndividualTested;
-            runner.OnLoopFinish += Runner_OnLoopFinish;
-
-            runner.DoRun(gameMode, firstGen);
-        }
-
+        #region Interface Click/Selection Handlers
         private void runTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             TreeNode node = e.Node;
@@ -612,7 +602,7 @@ namespace SuperIntelligence
             }
         }
 
-        // Best Genome Fitness click handler, changes the active tab to 'Genome'
+        // 'Generation' tab -> 'Best Genome Fitness' click handler, changes the active tab to 'Genome'
         private void generationBestGenomeLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             // changing to the genome tab
@@ -621,12 +611,42 @@ namespace SuperIntelligence
             generateGenomeTabDesign(bestIndividual.Genome);
         }
 
+        // 'Species' tab -> 'Best Genome Fitness' click handler, changes the active tab to 'Genome'
         private void speciesTabBestGenomeLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             // changing to the genome tab
             mainTabControl.SelectedTab = genomeTabPage;
             // regenerating genome tab
             generateGenomeTabDesign(bestIndividual.Genome);
+        }
+        #endregion
+
+        // Activates BackgroundWorker
+        private void runBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            string generationFileName = e.Argument as string;
+            Generation firstGen;
+
+            runner = new Runner(applicationSettings.GameFile, (int)gameInstancesUpDown.Value);
+
+            if (generationFileName != string.Empty)
+            {
+                firstGen = JsonConvert.DeserializeObject<Generation>(File.ReadAllText(generationFileName));
+            }
+            else
+            {
+                firstGen = Runner.MakeFirstGeneration(runner.InnovationGenerator, (int)populationSizeUpDown.Value);
+            }
+
+            Runner_OnNextGeneration(firstGen);
+
+            runner.OnNextGeneration += Runner_OnNextGeneration;
+            runner.OnGenerationFinished += Runner_OnGenerationFinished;
+            runner.OnUntestedIndividual += Runner_OnUntestedIndividual;
+            runner.OnIndividualTested += Runner_OnIndividualTested;
+            runner.OnLoopFinish += Runner_OnLoopFinish;
+
+            runner.DoRun(gameMode, firstGen);
         }
     }
 }
