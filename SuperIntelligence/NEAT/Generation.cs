@@ -73,38 +73,19 @@ namespace SuperIntelligence.NEAT
                     if (top == genome)
                         continue;
 
+                    if (genome.Fitness == int.MinValue) // don't take individuals that caused exceptions (or had an insanely bad run)
+                        continue;
+
                     Genome child = Genome.CrossOver(top, genome);
                     child.Mutate(generator);
                     child.Id = genomeId++;
                     next.AddGenome(child);
                 }
-
-                /*
-                 * this code takes the top sqrt of members and crosses them
-                foreach (Genome genome in topMembers)
-                {
-                    Genome mutation = genome.Copy();
-                    mutation.Mutate(generator);
-                    mutation.Id = genomeId++;
-                    next.AddGenome(mutation);
-
-                    foreach (Genome other in topMembers)
-                    {
-                        if (genome == other)
-                            continue;
-
-                        double adjGenomeFitness = AdjustedFitness(genome, genome.Fitness);
-                        double adjOtherFitness = AdjustedFitness(other, other.Fitness);
-
-                        Genome fit = adjGenomeFitness > adjOtherFitness ? genome : other;
-                        Genome cross = Genome.CrossOver(fit, fit == genome ? other : genome);
-                        cross.Mutate(generator);
-                        cross.Id = genomeId++;
-                        next.AddGenome(cross);
-                    }
-                }
-                */
             }
+
+            // remove empty species
+            foreach (var s in next.Species.Where(s => s.Members.Count == 0))
+                Species.Remove(s);
 
             // TODO: maybe rethink this
             for (int i = 0; i < next.Species.Count; i++)

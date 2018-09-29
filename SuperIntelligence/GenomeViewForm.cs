@@ -210,7 +210,7 @@ namespace SuperIntelligence
         }
 
         // changes some startStopButton parameters
-        private void changeStartStopButton(bool enabled, string text)
+        private void ChangeStartStopButton(bool enabled, string text)
         {
             startStopRunButton.Text = text;
             startStopRunButton.Enabled = enabled;
@@ -221,7 +221,7 @@ namespace SuperIntelligence
         {
             if (runner != null && runner.ShouldStop)
             {
-                changeStartStopButton(true, "Start");
+                ChangeStartStopButton(true, "Start");
                 runTimer.Stop();
                 runBackgroundWorker.CancelAsync();
             }
@@ -327,7 +327,7 @@ namespace SuperIntelligence
                 runStartTime = DateTime.Now;
                 runTimer.Start();
 
-                changeStartStopButton(true, "Stop");
+                ChangeStartStopButton(true, "Stop");
                 runStarted = true;
             }
 
@@ -340,7 +340,7 @@ namespace SuperIntelligence
                     runner.ShouldStop = true;
                 }
 
-                changeStartStopButton(false, "Wait...");
+                ChangeStartStopButton(false, "Wait...");
                 runStarted = false;
             }
         }
@@ -379,7 +379,7 @@ namespace SuperIntelligence
         private void Runner_OnNextGeneration(Generation generation)
         {
             runTreeView.Invoke(new Runner.GenerationDelegate(AddGeneration), new object[] { generation });
-            runTreeView.Invoke(new Runner.GenerationDelegate(generateGenerationTabDesign), new object[] { generation });
+            runTreeView.Invoke(new Runner.GenerationDelegate(GenerateGenerationTabDesign), new object[] { generation });
         }
 
         private void Runner_OnLoopFinish()
@@ -390,7 +390,7 @@ namespace SuperIntelligence
 
         #region Tab Design Methods
         // Generate Genome tab: writes the genome id, its fitness and draws its graph 
-        private void generateGenomeTabDesign (Genome genome)
+        private void GenerateGenomeTabDesign (Genome genome)
         {
             // statistics labels
             genomeNameLabel.Text = "Genome " + genome.Id;
@@ -409,7 +409,7 @@ namespace SuperIntelligence
         }
 
         // Generate Species tab: 
-        private void generateSpeciesTabDesign(Species species)
+        private void GenerateSpeciesTabDesign(Species species)
         {
             Dictionary<double, int> counts = new Dictionary<double, int>();
             ColumnSeries series = new ColumnSeries();
@@ -446,7 +446,7 @@ namespace SuperIntelligence
         }
 
         // Generate Generation tab: 
-        private void generateGenerationTabDesign(Generation generation)
+        private void GenerateGenerationTabDesign(Generation generation)
         {
             int genCount = 0;
 
@@ -590,20 +590,20 @@ namespace SuperIntelligence
             if (node.Tag is Genome)
             {
                 Genome genome = node.Tag as Genome;
-                generateGenomeTabDesign(genome);
+                GenerateGenomeTabDesign(genome);
                 // changing to the genome tab
                 mainTabControl.SelectedTab = genomeTabPage;
             }
             else if (node.Tag is Species)
             {
                 Species species = node.Tag as Species;
-                generateSpeciesTabDesign(species);
+                GenerateSpeciesTabDesign(species);
 
             }
             else if (node.Tag is Generation)
             {
                 Generation generation = node.Tag as Generation;
-                generateGenerationTabDesign(generation);
+                GenerateGenerationTabDesign(generation);
             }
 
             if (e.Node.Parent != null)
@@ -618,7 +618,7 @@ namespace SuperIntelligence
             // changing to the genome tab
             mainTabControl.SelectedTab = genomeTabPage;
             // regenerating genome tab
-            generateGenomeTabDesign(bestIndividual.Genome);
+            GenerateGenomeTabDesign(bestIndividual.Genome);
         }
 
         private void speciesTabBestGenomeLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -626,7 +626,7 @@ namespace SuperIntelligence
             // changing to the genome tab
             mainTabControl.SelectedTab = genomeTabPage;
             // regenerating genome tab
-            generateGenomeTabDesign(bestIndividual.Genome);
+            GenerateGenomeTabDesign(bestIndividual.Genome);
         }
     }
 }

@@ -198,7 +198,7 @@ namespace SuperIntelligence
                     AIRunner runner = new AIRunner(manager, individual, mode);
                     ThreadStart start = new ThreadStart(() =>
                     {
-                        runner.DoGameRun(); // do the game run
+                        runner.DoSafeRun(); // do the game run
 
                         // add the individual to the list of tested individuals
                         TestedIndividuals.Enqueue(runner.Individual);

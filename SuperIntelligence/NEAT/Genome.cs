@@ -32,7 +32,7 @@ namespace SuperIntelligence.NEAT
 
         public int Size
         {
-            get => Connections.Count + Nodes.Count;
+            get => Connections.Where(c => c.Value.Expressed).Count();
         }
         #endregion
 
@@ -213,7 +213,9 @@ namespace SuperIntelligence.NEAT
 
         public int CompareTo(Genome other) =>
             Fitness.CompareTo(other.Fitness);
-
         #endregion
+
+        public override string ToString() =>
+            "Genome[Id=" + Id + ", Fitness=" + Fitness + ", Size=" + Size + "]";
     }
 }
