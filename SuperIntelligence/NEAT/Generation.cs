@@ -12,6 +12,7 @@ namespace SuperIntelligence.NEAT
     {
         public int Number;
         public List<Species> Species;
+        public static double InterspeciesMatingChance = 0.01;
 
         public Generation(int number)
         {
@@ -19,6 +20,10 @@ namespace SuperIntelligence.NEAT
             Species = new List<Species>();
         }
 
+        /// <summary>
+        /// Adds a genome to a compatible specie.
+        /// </summary>
+        /// <param name="genome"></param>
         public void AddGenome(Genome genome)
         {
             // add the genome to a compatible species
@@ -43,7 +48,11 @@ namespace SuperIntelligence.NEAT
             return fitness / sharing;
         }
 
-        public static double InterspeciesMatingChance = 0.01;
+        /// <summary>
+        /// Creates a new generation.
+        /// </summary>
+        /// <param name="generator"></param>
+        /// <returns></returns>
         public Generation Next(InnovationGenerator generator)
         {
             Generation next = new Generation(Number + 1);
@@ -51,9 +60,12 @@ namespace SuperIntelligence.NEAT
 
             foreach (Species oldSpecies in Species)
             {
-                // skip species with no members
+                // remove species with no members
                 if (oldSpecies.Members.Count <= 0)
+                {
+                    Species.Remove(oldSpecies);
                     continue;
+                }
 
                 // create a new species for the new genome with a random representative from
                 // the current species
@@ -82,10 +94,6 @@ namespace SuperIntelligence.NEAT
                     next.AddGenome(child);
                 }
             }
-
-            // remove empty species
-            foreach (var s in next.Species.Where(s => s.Members.Count == 0))
-                Species.Remove(s);
 
             // TODO: maybe rethink this
             for (int i = 0; i < next.Species.Count; i++)

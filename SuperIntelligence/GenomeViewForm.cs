@@ -73,6 +73,9 @@ namespace SuperIntelligence
             }
         }
 
+        /// <summary>
+        /// Clears datum showed at the program (e.g. charts).
+        /// </summary>
         private void ClearData()
         {
             runTreeView.Nodes.Clear();
@@ -89,18 +92,25 @@ namespace SuperIntelligence
             runMaxGenomeSizeValues.Clear();
         }
 
+        /// <summary>
+        /// Adds the generation, species and genomes to the 'Run' tab.
+        /// </summary>
+        /// <param name="generation"></param>
         private void AddGeneration(Generation generation)
         {
+            // creates the generation node
             TreeNode generationNode = runTreeView.Nodes.Add("Generation " + generation.Number);
             generationNode.Tag = generation;
 
             foreach (Species species in generation.Species)
             {
+                // creates the specie node
                 TreeNode speciesNode = generationNode.Nodes.Add("Species " + species.Id);
                 speciesNode.Tag = species;
 
                 foreach (Genome genome in species.Members)
                 {
+                    // creates the genome node
                     TreeNode genomeNode = speciesNode.Nodes.Add("Genome " + genome.Id);
                     genomeNode.Tag = genome;
 
@@ -109,6 +119,10 @@ namespace SuperIntelligence
             }
         }
 
+        /// <summary>
+        /// Adds generation info to the program (e.g. charts).
+        /// </summary>
+        /// <param name="generation"></param>
         private void GenerationFinished(Generation generation)
         {
             // add fitness data to run graphs
@@ -129,6 +143,10 @@ namespace SuperIntelligence
             runBestGenomeSizeValues.Add(new ObservablePoint(generation.Number, bestGenome.Size));
         }
 
+        /// <summary>
+        /// Marks an untested individual at 'Run' tab by coloring its label text background with yellow.
+        /// </summary>
+        /// <param name="individual"></param>
         private void MarkUntested(Individual individual)
         {
             if (genomeMap.ContainsKey(individual.Genome))
@@ -137,6 +155,10 @@ namespace SuperIntelligence
             }
         }
 
+        /// <summary>
+        /// Marks a tested individual at 'Run' tab by removing the yellow background.
+        /// </summary>
+        /// <param name="individual"></param>
         private void MarkTested(Individual individual)
         {
             if (genomeMap.ContainsKey(individual.Genome))
@@ -145,6 +167,10 @@ namespace SuperIntelligence
             }
         }
 
+        /// <summary>
+        /// Updates the 'bestIndividual' variable and shows its info at 'Generation' and 'Species' tabs.
+        /// </summary>
+        /// <param name="individual"></param>
         private void BestGenome(Individual individual)
         {
             if (bestIndividual == null)
@@ -164,6 +190,11 @@ namespace SuperIntelligence
             speciesTabBestGenomeLinkLabel.Text = "Best Genome Fitness: " + bestIndividual.Index.ToString();
         }
 
+        /// <summary>
+        /// Generates the genome graph to be shown at 'Genome' tab.
+        /// </summary>
+        /// <param name="genome"></param>
+        /// <returns></returns>
         private async Task<MemoryStream> MakeGenomeGraphImage(Genome genome)
         {
             List<Statement> statements = new List<Statement>();
@@ -212,7 +243,11 @@ namespace SuperIntelligence
             return memoryStream;
         }
 
-        // changes some startStopButton parameters
+        /// <summary>
+        /// Changes the text and enables/disables the Start/Stop button at 'Rub' tab.
+        /// </summary>
+        /// <param name="enabled"></param>
+        /// <param name="text"></param>
         private void ChangeStartStopButton(bool enabled, string text)
         {
             startStopRunButton.Text = text;
@@ -220,6 +255,10 @@ namespace SuperIntelligence
         }
 
         // called when the loop at Runner ends, it stops the timer, cancel async work and change the button to start
+        /// <summary>
+        /// Changes the StartStop button from "Wait..." to "Start" again, stops the timer and cancels
+        /// runBackgroundWorker async.
+        /// </summary>
         private void ChangeWaitButton()
         {
             if (runner != null && runner.ShouldStop)
@@ -232,6 +271,11 @@ namespace SuperIntelligence
         #endregion
 
         #region UI Methods
+        /// <summary>
+        /// Populate the UI with information (e.g. create the gamemodes' list, allocate space for charts).
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void GenomeViewForm_Load(object sender, EventArgs e)
         {
             EnsureApplicationSettings();
@@ -288,7 +332,11 @@ namespace SuperIntelligence
             }
         }
 
-        // 'Run Settings' -> 'Auto-generate first generation' check box handler
+        /// <summary>
+        /// 'Run Settings' -> 'Auto-generate first generation' check box handler.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void randomFirstGenCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             CheckBox box = sender as CheckBox;
@@ -302,6 +350,11 @@ namespace SuperIntelligence
         private void clearDataToolStripMenuItem_Click(object sender, EventArgs e) =>
             ClearData();
 
+        /// <summary>
+        /// Start/Stop button click handler.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void startStopRunButton_Click(object sender, EventArgs e)
         {
             // when the user press the Start button
@@ -349,6 +402,11 @@ namespace SuperIntelligence
             }
         }
 
+        /// <summary>
+        /// Controls the timer from 'Run' tab.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void runTimer_Tick(object sender, EventArgs e)
         {
             var difference = DateTime.Now - runStartTime;
@@ -364,28 +422,47 @@ namespace SuperIntelligence
         #endregion
 
         #region Runner Delegate Methods
+        /// <summary>
+        /// Called when an individual is tested at Runner.
+        /// </summary>
+        /// <param name="individual"></param>
         private void Runner_OnIndividualTested(Individual individual)
         {
             runTreeView.Invoke(new Runner.IndividualDelegate(BestGenome), new object[] { individual });
             runTreeView.Invoke(new Runner.IndividualDelegate(MarkTested), new object[] { individual });
         }
 
+        /// <summary>
+        /// Called from Runner to change a individual to unmarked at the UI.
+        /// </summary>
+        /// <param name="individual"></param>
         private void Runner_OnUntestedIndividual(Individual individual)
         {
             runTreeView.Invoke(new Runner.IndividualDelegate(MarkUntested), new object[] { individual });
         }
 
+        /// <summary>
+        /// Called when Runner finishes the tests on a generation.
+        /// </summary>
+        /// <param name="generation"></param>
         private void Runner_OnGenerationFinished(Generation generation)
         {
             runFitnessChart.Invoke(new Runner.GenerationDelegate(GenerationFinished), new object[] { generation });
         }
 
+        /// <summary>
+        /// Called at Runner to generate the next generation to be tested.
+        /// </summary>
+        /// <param name="generation"></param>
         private void Runner_OnNextGeneration(Generation generation)
         {
             runTreeView.Invoke(new Runner.GenerationDelegate(AddGeneration), new object[] { generation });
             runTreeView.Invoke(new Runner.GenerationDelegate(GenerateGenerationTabDesign), new object[] { generation });
         }
 
+        /// <summary>
+        /// Called when the current generation is tested and the Stop button had been pressed. 
+        /// </summary>
         private void Runner_OnLoopFinish()
         {
             runTreeView.Invoke(new Runner.LoopFinishDelegate(ChangeWaitButton));
@@ -393,11 +470,13 @@ namespace SuperIntelligence
         #endregion
 
         #region RunSettings Delegate Methods
+        //TODO
         private void RunSettings_ReadSettings()
         {
 
         }
 
+        //TODO
         private void RunSettings_WriteSettings()
         {
 
@@ -405,7 +484,10 @@ namespace SuperIntelligence
         #endregion
 
         #region Tab Design Methods
-        // Generate Genome tab: writes the genome id, its fitness and draws its graph 
+        /// <summary>
+        /// Adds info to 'Genome' tab (e.g.: charts, genome id, its fitness).
+        /// </summary>
+        /// <param name="genome"></param>
         private void GenerateGenomeTabDesign (Genome genome)
         {
             // statistics labels
@@ -424,7 +506,10 @@ namespace SuperIntelligence
                 });
         }
 
-        // Generate Species tab: 
+        /// <summary>
+        /// Adds info to 'Species' tab (e.g.: charts).
+        /// </summary>
+        /// <param name="species"></param>
         private void GenerateSpeciesTabDesign(Species species)
         {
             Dictionary<double, int> counts = new Dictionary<double, int>();
@@ -461,7 +546,10 @@ namespace SuperIntelligence
             speciesTabFitnessChart.Series.Add(series);
         }
 
-        // Generate Generation tab: 
+        /// <summary>
+        /// Adds info to 'Generation' tab (e.g.: generation number, # of species and genomes).
+        /// </summary>
+        /// <param name="generation"></param>
         private void GenerateGenerationTabDesign(Generation generation)
         {
             int genCount = 0;
@@ -621,7 +709,11 @@ namespace SuperIntelligence
         }
         #endregion
 
-        // Activates BackgroundWorker
+        /// <summary>
+        /// Activates the background worker.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void runBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             string generationFileName = e.Argument as string;

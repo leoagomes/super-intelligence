@@ -29,7 +29,9 @@ namespace SuperIntelligence.Data
             ResetSettings();
         }
 
-        // Loads the default settings' values.
+        /// <summary>
+        /// Sets the default configuration.
+        /// </summary>
         public void ResetSettings ()
         {
             settingsFile = "runsettings.json";
