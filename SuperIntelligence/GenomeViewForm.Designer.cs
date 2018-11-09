@@ -78,6 +78,7 @@
             this.genomeTabFitnessLabel = new System.Windows.Forms.Label();
             this.genomeNameLabel = new System.Windows.Forms.Label();
             this.runSettingsTabPage = new System.Windows.Forms.TabPage();
+            this.saveButtonRunSettings = new System.Windows.Forms.Button();
             this.gameInstancesUpDown = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -593,6 +594,7 @@
             // 
             // runSettingsTabPage
             // 
+            this.runSettingsTabPage.Controls.Add(this.saveButtonRunSettings);
             this.runSettingsTabPage.Controls.Add(this.gameInstancesUpDown);
             this.runSettingsTabPage.Controls.Add(this.label5);
             this.runSettingsTabPage.Controls.Add(this.groupBox1);
@@ -605,6 +607,15 @@
             this.runSettingsTabPage.TabIndex = 6;
             this.runSettingsTabPage.Text = "Run Settings";
             this.runSettingsTabPage.UseVisualStyleBackColor = true;
+            // 
+            // saveButtonRunSettings
+            // 
+            this.saveButtonRunSettings.Location = new System.Drawing.Point(496, 496);
+            this.saveButtonRunSettings.Name = "saveButtonRunSettings";
+            this.saveButtonRunSettings.Size = new System.Drawing.Size(75, 23);
+            this.saveButtonRunSettings.TabIndex = 0;
+            this.saveButtonRunSettings.Text = "Save";
+            this.saveButtonRunSettings.Click += new System.EventHandler(this.saveButtonRunSettings_Click);
             // 
             // gameInstancesUpDown
             // 
@@ -848,5 +859,6 @@
         private System.Windows.Forms.NumericUpDown gameInstancesUpDown;
         private System.Windows.Forms.Label label5;
         private LiveCharts.WinForms.CartesianChart runGenomeSizeChart;
+        private System.Windows.Forms.Button saveButtonRunSettings;
     }
 }

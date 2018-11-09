@@ -23,6 +23,7 @@ using LiveCharts.Defaults;
 using SuperIntelligence.NEAT;
 using SuperIntelligence.Other;
 using SuperIntelligence.Data;
+using SuperIntelligence.Game;
 
 namespace SuperIntelligence
 {
@@ -42,12 +43,13 @@ namespace SuperIntelligence
         Dictionary<Genome, TreeNode> genomeMap = new Dictionary<Genome, TreeNode>();
         Runner runner;
         Individual bestIndividual = null;
-        RunSettings settings;
+        RunSettingsController settings;
 
         public GenomeViewForm()
         {
             InitializeComponent();
-            settings = new RunSettings();
+            settings = new RunSettingsController();
+            SetUIRunSettings();
         }
 
         #region Helper Methods
@@ -254,9 +256,8 @@ namespace SuperIntelligence
             startStopRunButton.Enabled = enabled;
         }
 
-        // called when the loop at Runner ends, it stops the timer, cancel async work and change the button to start
         /// <summary>
-        /// Changes the StartStop button from "Wait..." to "Start" again, stops the timer and cancels
+        /// Changes the StartStop button from "Wait..." to "Start" again, stops the timer and cancels async worker.
         /// runBackgroundWorker async.
         /// </summary>
         private void ChangeWaitButton()
@@ -322,6 +323,11 @@ namespace SuperIntelligence
             };
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ApplicationSettingsForm form = new ApplicationSettingsForm();
@@ -347,6 +353,11 @@ namespace SuperIntelligence
             populationSizeUpDown.Enabled = box.Checked;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void clearDataToolStripMenuItem_Click(object sender, EventArgs e) =>
             ClearData();
 
@@ -414,10 +425,37 @@ namespace SuperIntelligence
                 difference.Minutes, difference.Seconds);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void browseFirstGenButton_Click(object sender, EventArgs e)
         {
             if (openFirstGenFileDialog.ShowDialog() == DialogResult.OK)
                 generationFileTextBox.Text = openFirstGenFileDialog.FileName;
+        }
+
+        /// <summary>
+        /// Sets RunSettings variables to the UI.
+        /// </summary>
+        private void SetUIRunSettings()
+        {
+            gameInstancesUpDown.Value = settings.s.gameInstances;
+            randomFirstGenCheckBox.Checked = settings.s.autoGenerate;
+            populationSizeUpDown.Value = settings.s.initPopSize;
+            generationFileTextBox.Text = settings.s.generationFile;
+        }
+
+        /// <summary>
+        /// Gets 'Run Settings' tab variables.
+        /// </summary>
+        private void getUIRunSettings()
+        {
+            settings.s.gameInstances = int.Parse(gameInstancesUpDown.Value.ToString());
+            settings.s.autoGenerate = randomFirstGenCheckBox.Checked;
+            settings.s.initPopSize = int.Parse(populationSizeUpDown.Value.ToString());
+            settings.s.generationFile = generationFileTextBox.Text;
         }
         #endregion
 
@@ -466,20 +504,6 @@ namespace SuperIntelligence
         private void Runner_OnLoopFinish()
         {
             runTreeView.Invoke(new Runner.LoopFinishDelegate(ChangeWaitButton));
-        }
-        #endregion
-
-        #region RunSettings Delegate Methods
-        //TODO
-        private void RunSettings_ReadSettings()
-        {
-
-        }
-
-        //TODO
-        private void RunSettings_WriteSettings()
-        {
-
         }
         #endregion
 
@@ -662,6 +686,11 @@ namespace SuperIntelligence
         #endregion
 
         #region Interface Click/Selection Handlers
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void runTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             TreeNode node = e.Node;
@@ -690,7 +719,11 @@ namespace SuperIntelligence
             }
         }
 
-        // 'Generation' tab -> 'Best Genome Fitness' click handler, changes the active tab to 'Genome'
+        /// <summary>
+        /// 'Generation' tab -> 'Best Genome Fitness' click handler, changes the active tab to 'Genome'.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void generationBestGenomeLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             // changing to the genome tab
@@ -699,7 +732,11 @@ namespace SuperIntelligence
             GenerateGenomeTabDesign(bestIndividual.Genome);
         }
 
-        // 'Species' tab -> 'Best Genome Fitness' click handler, changes the active tab to 'Genome'
+        /// <summary>
+        /// 'Species' tab -> 'Best Genome Fitness' click handler, changes the active tab to 'Genome'.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void speciesTabBestGenomeLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             // changing to the genome tab
@@ -707,8 +744,20 @@ namespace SuperIntelligence
             // regenerating genome tab
             GenerateGenomeTabDesign(bestIndividual.Genome);
         }
+
+        /// <summary>
+        /// 'Run Settings' tab -> 'Save' button click handler, save settings into a file.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void saveButtonRunSettings_Click(object sender, EventArgs e)
+        {
+            getUIRunSettings();
+            settings.SaveSettings();
+        }
         #endregion
 
+        #region Misc
         /// <summary>
         /// Activates the background worker.
         /// </summary>
@@ -740,5 +789,52 @@ namespace SuperIntelligence
 
             runner.DoRun(gameMode, firstGen);
         }
+
+        /// <summary>
+        /// Convert a GameModes number to a KeyValuePair. It is used to change the game mode 'Run Settings' tab.
+        /// </summary>
+        /// <param name="gameMode"></param>
+        /// <returns></returns>
+        public KeyValuePair<int, string> ConvertGameModeToKeyValuePair(int gameMode)
+        {
+            int key = (int)GameModes.Hexagon;
+            string value = "Hexagon";
+
+            switch (gameMode)
+            {
+                case (int)GameModes.Hexagon:
+                    key = (int)GameModes.Hexagon;
+                    value = "Hexagon";
+                    break;
+
+                case (int)GameModes.Hexagoner:
+                    key = (int)GameModes.Hexagoner;
+                    value = "Hexagoner";
+                    break;
+
+                case (int)GameModes.HexagonerHyper:
+                    key = (int)GameModes.HexagonerHyper;
+                    value = "HexagonerHyper";
+                    break;
+
+                case (int)GameModes.Hexagonest:
+                    key = (int)GameModes.Hexagonest;
+                    value = "Hexagonest";
+                    break;
+
+                case (int)GameModes.HexagonestHyper:
+                    key = (int)GameModes.HexagonestHyper;
+                    value = "HexagonestHyper";
+                    break;
+
+                case (int)GameModes.HexagonHyper:
+                    key = (int)GameModes.HexagonHyper;
+                    value = "HexagonHyper";
+                    break;
+            }
+
+            return new KeyValuePair<int, string>(key, value);
+        }
+        #endregion
     }
 }

@@ -87,6 +87,7 @@
     <Compile Include="Base\AIRunner.cs" />
     <Compile Include="Data\AplicationSettingsData.cs" />
     <Compile Include="Data\RunSettings.cs" />
+    <Compile Include="Data\RunSettingsController.cs" />
     <Compile Include="Data\Constants.cs" />
     <Compile Include="Game\GameManager.cs" />
     <Compile Include="Game\GameInstance.cs" />
