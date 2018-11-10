@@ -450,9 +450,16 @@ namespace SuperIntelligence
         private void SetUIRunSettings()
         {
             gameInstancesUpDown.Value = settings.s.gameInstances;
+
             randomFirstGenCheckBox.Checked = settings.s.autoGenerate;
             populationSizeUpDown.Value = settings.s.initPopSize;
             generationFileTextBox.Text = settings.s.generationFile;
+
+            weightMutationUpDown.Value = settings.s.weightMutation;
+            weightPerturbanceUpDown.Value = settings.s.weightPerturbance;
+            nodeCreationUpDown.Value = settings.s.nodeCreation;
+            connectionCreationUpDown.Value = settings.s.connectionCreation;
+            eitherDisabledUpDown.Value = settings.s.eitherDisabled;
         }
 
         /// <summary>
@@ -460,10 +467,18 @@ namespace SuperIntelligence
         /// </summary>
         private void getUIRunSettings()
         {
+            settings.s.gameMode = gameModeComboBox.SelectedIndex;
             settings.s.gameInstances = int.Parse(gameInstancesUpDown.Value.ToString());
+
             settings.s.autoGenerate = randomFirstGenCheckBox.Checked;
             settings.s.initPopSize = int.Parse(populationSizeUpDown.Value.ToString());
             settings.s.generationFile = generationFileTextBox.Text;
+
+            settings.s.weightMutation = decimal.Parse(weightMutationUpDown.Value.ToString());
+            settings.s.weightPerturbance = decimal.Parse(weightPerturbanceUpDown.Value.ToString());
+            settings.s.nodeCreation = decimal.Parse(nodeCreationUpDown.Value.ToString());
+            settings.s.connectionCreation = decimal.Parse(connectionCreationUpDown.Value.ToString());
+            settings.s.eitherDisabled = decimal.Parse(eitherDisabledUpDown.Value.ToString());
         }
         #endregion
 
@@ -762,6 +777,12 @@ namespace SuperIntelligence
         {
             getUIRunSettings();
             settings.SaveSettings();
+        }
+
+        private void resetButtonRunSettings_Click(object sender, EventArgs e)
+        {
+            settings.s.ResetSettings();
+            SetUIRunSettings();
         }
         #endregion
 

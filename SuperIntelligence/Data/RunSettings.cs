@@ -16,6 +16,11 @@ namespace SuperIntelligence.Data
         public int gameInstances { get; set; }
         public int initPopSize { get; set; }
         public bool autoGenerate { get; set; }
+        public decimal weightMutation { get; set; }
+        public decimal weightPerturbance { get; set; }
+        public decimal nodeCreation { get; set; }
+        public decimal connectionCreation { get; set; }
+        public decimal eitherDisabled { get; set; }
 
         /// <summary>
         /// Default constructor. Generates a default setting.
@@ -28,18 +33,32 @@ namespace SuperIntelligence.Data
         /// <summary>
         /// Creates a customised setting.
         /// </summary>
-        /// <param name="generationFile">Generation file name.</param>
+        /// <param name="generationFile"></param>
         /// <param name="gameMode"></param>
-        /// <param name="gameInstances">Number of simultaneously game instances.</param>
-        /// <param name="initPopSize">Initial population size.</param>
+        /// <param name="gameInstances"></param>
+        /// <param name="initPopSize"></param>
         /// <param name="autoGenerate"></param>
-        public RunSettings(string generationFile, int gameMode, int gameInstances, int initPopSize, bool autoGenerate)
+        /// <param name="weightMutation"></param>
+        /// <param name="weightPerturbance"></param>
+        /// <param name="nodeCreation"></param>
+        /// <param name="connectionCreation"></param>
+        /// <param name="eitherDisabled"></param>
+        public RunSettings(string generationFile, int gameMode, int gameInstances, int initPopSize, bool autoGenerate,
+            decimal weightMutation, decimal weightPerturbance, decimal nodeCreation, decimal connectionCreation,
+            decimal eitherDisabled)
         {
-            this.generationFile = generationFile;
             this.gameMode = gameMode;
             this.gameInstances = gameInstances;
+
             this.initPopSize = initPopSize;
             this.autoGenerate = autoGenerate;
+            this.generationFile = generationFile;
+
+            this.weightMutation = weightMutation;
+            this.weightPerturbance = weightPerturbance;
+            this.nodeCreation = nodeCreation;
+            this.connectionCreation = connectionCreation;
+            this.eitherDisabled = eitherDisabled;
         }
 
         /// <summary>
@@ -54,6 +73,12 @@ namespace SuperIntelligence.Data
             initPopSize = 50;
 
             autoGenerate = true;
+
+            this.weightMutation = 0.8M;
+            this.weightPerturbance = 0.9M;
+            this.nodeCreation = 0.3M;
+            this.connectionCreation = 0.8M;
+            this.eitherDisabled = 0.25M;
         }
     }
 }
