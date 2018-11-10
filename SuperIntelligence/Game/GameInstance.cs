@@ -22,6 +22,7 @@ namespace SuperIntelligence.Game
         MouseRight = 0x43A2A,
         GameTime = 0x2990,
         GameEnded = 0x13BC4,
+        GameEndedFaster = 0x296C,
     }
 
     public class Wall
@@ -128,6 +129,14 @@ namespace SuperIntelligence.Game
         }
 
         public bool GameEnded
+        {
+            get
+            {
+                return BasePointer.Read<int>((int)Offsets.GameEnded) == 1;
+            }
+        }
+
+        public bool GameEnded2
         {
             get
             {

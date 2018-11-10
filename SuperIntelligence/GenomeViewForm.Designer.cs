@@ -78,6 +78,12 @@
             this.genomeTabFitnessLabel = new System.Windows.Forms.Label();
             this.genomeNameLabel = new System.Windows.Forms.Label();
             this.runSettingsTabPage = new System.Windows.Forms.TabPage();
+            this.runVariablesGroupBox = new System.Windows.Forms.GroupBox();
+            this.weightMutationUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.saveButtonRunSettings = new System.Windows.Forms.Button();
             this.gameInstancesUpDown = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
@@ -93,6 +99,11 @@
             this.runBackgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.runTimer = new System.Windows.Forms.Timer(this.components);
             this.openFirstGenFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.weightPerturbanceUpDown = new System.Windows.Forms.NumericUpDown();
+            this.nodeCreationUpDown = new System.Windows.Forms.NumericUpDown();
+            this.connectionCreationUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label9 = new System.Windows.Forms.Label();
+            this.eitherDisabledUpDown = new System.Windows.Forms.NumericUpDown();
             this.mainMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -113,9 +124,15 @@
             this.panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.genomePictureBox)).BeginInit();
             this.runSettingsTabPage.SuspendLayout();
+            this.runVariablesGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.weightMutationUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gameInstancesUpDown)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.populationSizeUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.weightPerturbanceUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nodeCreationUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.connectionCreationUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.eitherDisabledUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // mainMenuStrip
@@ -594,6 +611,7 @@
             // 
             // runSettingsTabPage
             // 
+            this.runSettingsTabPage.Controls.Add(this.runVariablesGroupBox);
             this.runSettingsTabPage.Controls.Add(this.saveButtonRunSettings);
             this.runSettingsTabPage.Controls.Add(this.gameInstancesUpDown);
             this.runSettingsTabPage.Controls.Add(this.label5);
@@ -607,6 +625,81 @@
             this.runSettingsTabPage.TabIndex = 6;
             this.runSettingsTabPage.Text = "Run Settings";
             this.runSettingsTabPage.UseVisualStyleBackColor = true;
+            // 
+            // runVariablesGroupBox
+            // 
+            this.runVariablesGroupBox.Controls.Add(this.eitherDisabledUpDown);
+            this.runVariablesGroupBox.Controls.Add(this.connectionCreationUpDown);
+            this.runVariablesGroupBox.Controls.Add(this.nodeCreationUpDown);
+            this.runVariablesGroupBox.Controls.Add(this.weightPerturbanceUpDown);
+            this.runVariablesGroupBox.Controls.Add(this.label9);
+            this.runVariablesGroupBox.Controls.Add(this.weightMutationUpDown);
+            this.runVariablesGroupBox.Controls.Add(this.label8);
+            this.runVariablesGroupBox.Controls.Add(this.label7);
+            this.runVariablesGroupBox.Controls.Add(this.label6);
+            this.runVariablesGroupBox.Controls.Add(this.label1);
+            this.runVariablesGroupBox.Location = new System.Drawing.Point(9, 161);
+            this.runVariablesGroupBox.Name = "runVariablesGroupBox";
+            this.runVariablesGroupBox.Size = new System.Drawing.Size(227, 150);
+            this.runVariablesGroupBox.TabIndex = 8;
+            this.runVariablesGroupBox.TabStop = false;
+            this.runVariablesGroupBox.Text = "Variables";
+            // 
+            // weightMutationUpDown
+            // 
+            this.weightMutationUpDown.DecimalPlaces = 4;
+            this.weightMutationUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.weightMutationUpDown.Location = new System.Drawing.Point(119, 19);
+            this.weightMutationUpDown.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.weightMutationUpDown.Name = "weightMutationUpDown";
+            this.weightMutationUpDown.Size = new System.Drawing.Size(97, 20);
+            this.weightMutationUpDown.TabIndex = 1;
+            this.weightMutationUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.weightMutationUpDown.ValueChanged += new System.EventHandler(this.weightMutationUpDown_ValueChanged);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(6, 99);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(105, 13);
+            this.label8.TabIndex = 0;
+            this.label8.Text = "Connection creation:";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 73);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(77, 13);
+            this.label7.TabIndex = 0;
+            this.label7.Text = "Node creation:";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 47);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(104, 13);
+            this.label6.TabIndex = 0;
+            this.label6.Text = "Weight perturbance:";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 21);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(87, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Weight mutation:";
             // 
             // saveButtonRunSettings
             // 
@@ -747,6 +840,95 @@
             // 
             this.openFirstGenFileDialog.Filter = "JSON files|*.json|All files|*.*";
             // 
+            // weightPerturbanceUpDown
+            // 
+            this.weightPerturbanceUpDown.DecimalPlaces = 4;
+            this.weightPerturbanceUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.weightPerturbanceUpDown.Location = new System.Drawing.Point(119, 45);
+            this.weightPerturbanceUpDown.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.weightPerturbanceUpDown.Name = "weightPerturbanceUpDown";
+            this.weightPerturbanceUpDown.Size = new System.Drawing.Size(97, 20);
+            this.weightPerturbanceUpDown.TabIndex = 1;
+            this.weightPerturbanceUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.weightPerturbanceUpDown.ValueChanged += new System.EventHandler(this.weightPerturbanceUpDown_ValueChanged);
+            // 
+            // nodeCreationUpDown
+            // 
+            this.nodeCreationUpDown.DecimalPlaces = 4;
+            this.nodeCreationUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.nodeCreationUpDown.Location = new System.Drawing.Point(119, 71);
+            this.nodeCreationUpDown.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nodeCreationUpDown.Name = "nodeCreationUpDown";
+            this.nodeCreationUpDown.Size = new System.Drawing.Size(97, 20);
+            this.nodeCreationUpDown.TabIndex = 1;
+            this.nodeCreationUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.nodeCreationUpDown.ValueChanged += new System.EventHandler(this.nodeCreationUpDown_ValueChanged);
+            // 
+            // connectionCreationUpDown
+            // 
+            this.connectionCreationUpDown.DecimalPlaces = 4;
+            this.connectionCreationUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.connectionCreationUpDown.Location = new System.Drawing.Point(119, 97);
+            this.connectionCreationUpDown.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.connectionCreationUpDown.Name = "connectionCreationUpDown";
+            this.connectionCreationUpDown.Size = new System.Drawing.Size(97, 20);
+            this.connectionCreationUpDown.TabIndex = 1;
+            this.connectionCreationUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.connectionCreationUpDown.ValueChanged += new System.EventHandler(this.connectionCreationUpDown_ValueChanged);
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(6, 125);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(79, 13);
+            this.label9.TabIndex = 0;
+            this.label9.Text = "Either disabled:";
+            // 
+            // eitherDisabledUpDown
+            // 
+            this.eitherDisabledUpDown.DecimalPlaces = 4;
+            this.eitherDisabledUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.eitherDisabledUpDown.Location = new System.Drawing.Point(119, 123);
+            this.eitherDisabledUpDown.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.eitherDisabledUpDown.Name = "eitherDisabledUpDown";
+            this.eitherDisabledUpDown.Size = new System.Drawing.Size(97, 20);
+            this.eitherDisabledUpDown.TabIndex = 1;
+            this.eitherDisabledUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.eitherDisabledUpDown.ValueChanged += new System.EventHandler(this.eitherDisabledUpDown_ValueChanged);
+            // 
             // GenomeViewForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -785,10 +967,17 @@
             ((System.ComponentModel.ISupportInitialize)(this.genomePictureBox)).EndInit();
             this.runSettingsTabPage.ResumeLayout(false);
             this.runSettingsTabPage.PerformLayout();
+            this.runVariablesGroupBox.ResumeLayout(false);
+            this.runVariablesGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.weightMutationUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gameInstancesUpDown)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.populationSizeUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.weightPerturbanceUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nodeCreationUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.connectionCreationUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.eitherDisabledUpDown)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -860,5 +1049,16 @@
         private System.Windows.Forms.Label label5;
         private LiveCharts.WinForms.CartesianChart runGenomeSizeChart;
         private System.Windows.Forms.Button saveButtonRunSettings;
+        private System.Windows.Forms.GroupBox runVariablesGroupBox;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.NumericUpDown weightMutationUpDown;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.NumericUpDown connectionCreationUpDown;
+        private System.Windows.Forms.NumericUpDown nodeCreationUpDown;
+        private System.Windows.Forms.NumericUpDown weightPerturbanceUpDown;
+        private System.Windows.Forms.NumericUpDown eitherDisabledUpDown;
+        private System.Windows.Forms.Label label9;
     }
 }

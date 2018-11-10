@@ -12,6 +12,10 @@ namespace SuperIntelligence.NEAT
     {
         public int Number;
         public List<Species> Species;
+
+        /// <summary>
+        /// The chance of interspecies mating.
+        /// </summary>
         public static double InterspeciesMatingChance = 0.01;
 
         public Generation(int number)
@@ -85,7 +89,7 @@ namespace SuperIntelligence.NEAT
                     if (top == genome)
                         continue;
 
-                    if (genome.Fitness == int.MinValue) // don't take individuals that caused exceptions (or had an insanely bad run)
+                    if (genome.Fitness <= -4000.0) // don't take individuals that caused exceptions (or had an insanely bad run)
                         continue;
 
                     Genome child = Genome.CrossOver(top, genome);
@@ -107,6 +111,8 @@ namespace SuperIntelligence.NEAT
                     next.AddGenome(cross);
                 }
             }
+
+            next.Species.RemoveAll((species) => species.Members.Count == 0);
 
             return next;
         }

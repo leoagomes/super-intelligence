@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using static SuperIntelligence.Random.Random;
 
@@ -15,6 +13,42 @@ namespace SuperIntelligence.NEAT
 
         public Dictionary<int, Connection> Connections;
         public Dictionary<int, Node> Nodes;
+
+        /// <summary>
+        /// The probability of a weight being mutated.
+        /// </summary>
+        public static double WeightMutationProbability = 0.8;
+        /// <summary>
+        /// The probability of a weight being perturbed.
+        /// </summary>
+        /// <remarks>This is dependent on the probability of a weight being mutated.</remarks>
+        public static double WeightPerturbanceProbability = 0.9;
+        /// <summary>
+        /// The probability that new node will be created.
+        /// </summary>
+        public static double NodeCreationProbability = 0.3;
+        /// <summary>
+        /// The probability that a new connection will be created.
+        /// </summary>
+        public static double ConnectionCreationProbability = 0.15;
+
+        /// <summary>
+        /// The chance that a connection will be expressed if either of the parents had it disabled.
+        /// </summary>
+        public static double EitherDisabledChance = 0.25;
+
+        /// <summary>
+        /// Compatibility function excess coefficient.
+        /// </summary>
+        public static double ExcessCoefficient = 1.0;
+        /// <summary>
+        /// Compatibility function disjoint coefficient.
+        /// </summary>
+        public static double DisjointCoefficient = 1.0;
+        /// <summary>
+        /// Compatibility function weight coefficient.
+        /// </summary>
+        public static double WeightCoefficient = 0.4;
 
         public Genome(int id)
         {
@@ -95,8 +129,6 @@ namespace SuperIntelligence.NEAT
             AddConnection(b);
         }
 
-        public static double WeightMutationProbability = 0.8;
-        public static double WeightPerturbanceProbability = 0.9;
         public void MutateWeights()
         {
             foreach (Connection conn in Connections.Values)
@@ -111,17 +143,15 @@ namespace SuperIntelligence.NEAT
             }
         }
 
-        public static double CreateNodeProbability = 0.3;
-        public static double CreateConnectionProbability = 0.15;
         public void Mutate(InnovationGenerator generator)
         {
-            if (InChance(WeightMutationProbability))
-                MutateWeights();
+            //if (InChance(WeightMutationProbability))
+            MutateWeights();
 
-            if (InChance(CreateNodeProbability))
+            if (InChance(NodeCreationProbability))
                 CreateNode(generator);
 
-            if (InChance(CreateConnectionProbability))
+            if (InChance(ConnectionCreationProbability))
                 CreateConnection(generator);
         }
 
@@ -159,7 +189,7 @@ namespace SuperIntelligence.NEAT
                     newConn = conn.Copy();
                 }
 
-                newConn.Expressed = eitherDisabled ? !InChance(0.75) : newConn.Expressed;
+                newConn.Expressed = eitherDisabled ? InChance(EitherDisabledChance) : newConn.Expressed;
 
                 child.AddConnection(newConn);
             }
@@ -170,9 +200,6 @@ namespace SuperIntelligence.NEAT
             return child;
         }
 
-        public static double ExcessCoefficient = 1.0;
-        public static double DisjointCoefficient = 1.0;
-        public static double WeightCoefficient = 0.4;
         public double CompatibilityWith(Genome other)
         {
             int maxMutualInnovation = Math.Min(Connections.Keys.Max(), other.Connections.Keys.Max());

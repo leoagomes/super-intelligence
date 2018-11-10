@@ -101,7 +101,7 @@ namespace SuperIntelligence
         private void AddGeneration(Generation generation)
         {
             // creates the generation node
-            TreeNode generationNode = runTreeView.Nodes.Add("Generation " + generation.Number);
+            TreeNode generationNode = new TreeNode("Generation " + generation.Number);
             generationNode.Tag = generation;
 
             foreach (Species species in generation.Species)
@@ -119,6 +119,8 @@ namespace SuperIntelligence
                     genomeMap[genome] = genomeNode;
                 }
             }
+
+            runTreeView.Nodes.Add(generationNode);
         }
 
         /// <summary>
@@ -321,6 +323,12 @@ namespace SuperIntelligence
                     Title = "Best Genome Size"
                 }
             };
+
+            weightMutationUpDown.Value = (decimal)Genome.WeightMutationProbability;
+            weightPerturbanceUpDown.Value = (decimal)Genome.WeightPerturbanceProbability;
+            nodeCreationUpDown.Value = (decimal)Genome.NodeCreationProbability;
+            connectionCreationUpDown.Value = (decimal)Genome.ConnectionCreationProbability;
+            eitherDisabledUpDown.Value = (decimal)Genome.EitherDisabledChance;
         }
 
         /// <summary>
@@ -836,5 +844,20 @@ namespace SuperIntelligence
             return new KeyValuePair<int, string>(key, value);
         }
         #endregion
+
+        private void weightMutationUpDown_ValueChanged(object sender, EventArgs e) =>
+            Genome.WeightMutationProbability = (double)weightMutationUpDown.Value;
+
+        private void weightPerturbanceUpDown_ValueChanged(object sender, EventArgs e) =>
+            Genome.WeightPerturbanceProbability = (double)weightPerturbanceUpDown.Value;
+
+        private void nodeCreationUpDown_ValueChanged(object sender, EventArgs e) =>
+            Genome.NodeCreationProbability = (double)nodeCreationUpDown.Value;
+
+        private void connectionCreationUpDown_ValueChanged(object sender, EventArgs e) =>
+            Genome.ConnectionCreationProbability = (double)connectionCreationUpDown.Value;
+
+        private void eitherDisabledUpDown_ValueChanged(object sender, EventArgs e) =>
+            Genome.EitherDisabledChance = (double)eitherDisabledUpDown.Value;
     }
 }

@@ -39,7 +39,7 @@ namespace SuperIntelligence
             Wall[] walls = Game.Walls;
 
             var closer = walls
-                .Where(wall => wall.Distance > 160 && wall.Enabled != 0)
+                .Where(wall => wall.Distance > 100 && wall.Enabled != 0)
                 .OrderBy(wall => wall.Distance);
 
             int slotCount = Game.SlotCount;
@@ -59,19 +59,20 @@ namespace SuperIntelligence
                 }
                 input[index] = distance;
 
-                // add angle between player and slot to input
-                int slotAngle = (i * (360/slotCount)) + (180/slotCount);
-                int playerAngle = Game.PlayerAngle;
-                int playerSlotAngle = Math.Max(slotAngle, playerAngle) - Math.Min(slotAngle, playerAngle);
-                if (playerSlotAngle > 180)
-                    playerSlotAngle = 360 - playerSlotAngle;
+                double slotAngle = (i * (360.0 / slotCount)) + (180.0 / slotCount);
+                double playerAngle = Game.PlayerAngle;
+                double playerSlotAngle = playerAngle - slotAngle;
 
-                double playerSlotRad = ((Math.PI / 180) * playerSlotAngle);
-                double playerSlotRadSigned = playerAngle - playerSlotAngle == slotAngle ?
-                    playerSlotRad
-                    : -playerSlotRad;
+                if (playerSlotAngle < -180.0)
+                    playerSlotAngle += 360.0;
+                if (playerSlotAngle > 180.0)
+                    playerSlotAngle -= 360.0;
 
-                input[index + 1] = playerSlotRadSigned;
+                double playerSlotNormalizedAngle = playerSlotAngle / 180.0;
+                double playerSlotSignedNormalizedAngle = (playerAngle < slotAngle) ?
+                    -playerSlotNormalizedAngle : playerSlotNormalizedAngle;
+
+                input[index + 1] = playerSlotNormalizedAngle;
             }
 
             // in case slotCount was lesser than 6, we copy the first values for the last
@@ -80,8 +81,8 @@ namespace SuperIntelligence
                 input[i] = input[i - (slotCount * 2)];
 
 
-            double playerAngleRad = ((Math.PI / 180) * Game.PlayerAngle);
-            input[NetworkInputs - 2] = playerAngleRad;
+            //double playerAngleRad = ((Math.PI / 180) * Game.PlayerAngle);
+            //input[NetworkInputs - 2] = playerAngleRad;
 
             // add the final bias parameter
             input[NetworkInputs - 1] = 1;
@@ -137,7 +138,7 @@ namespace SuperIntelligence
             int fitness = 0;
 
             CurrentTick = 0;
-            while (!Game.GameEnded)
+            while (!Game.GameEnded && !Game.GameEnded2)
             {
                 // populate the list of inputs with game data
                 PopulateInputWithGameState(ref input);
@@ -159,6 +160,7 @@ namespace SuperIntelligence
                 Game.MouseDown = mouseRightDown || mouseLeftDown;
 
                 // do fitness calculations
+                int slotCount = Game.SlotCount;
                 int playerSlot = Game.GetCurrentPlayerSlot();
                 int farthestWallSlot = FarthestWallSlot(input);
 
@@ -180,6 +182,25 @@ namespace SuperIntelligence
                 }
                 lastPlayerSlot = playerSlot;
 
+                // check if it survived a wall closing in
+                bool hasCloseWall = false;
+                for (int i = 0; i < slotCount; i++)
+                {
+                    if (input[i * 2] <= 0.0)
+                    {
+                        hasCloseWall = true;
+                        break;
+                    }
+                }
+                if (hasCloseWall)
+                    fitness += 50;
+
+                // check if it passed through a small gap
+                if (input[(slotCount + (playerSlot - 1)) % slotCount] <= 0.0)
+                    fitness += 25;
+                if (input[(slotCount + (playerSlot + 1)) % slotCount] <= 0.0)
+                    fitness += 25;
+
                 // wait for next tick
                 CurrentTick++;
                 // increase fitness since it has lived longer
@@ -188,6 +209,7 @@ namespace SuperIntelligence
 
             // we lost, so let's update the game state
             Manager.UpdateState(GameStates.GameOver);
+            Thread.Sleep(2000);
 
             // remove input set before
             Game.MouseLeft = false;
@@ -196,7 +218,7 @@ namespace SuperIntelligence
 
             // save the individual's fitness
             //Individual.Fitness = fitness + Game.GameTime;
-            Individual.Fitness = Game.GameTime + fitness;
+            Individual.Fitness = (Game.GameTime + fitness) / 60;
         }
     }
 }
