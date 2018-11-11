@@ -871,7 +871,7 @@ namespace SuperIntelligence
             }
             else
             {
-                firstGen = Runner.MakeFirstGeneration(runner.InnovationGenerator, runner.GenomeInnovationGenerator, (int)populationSizeUpDown.Value);
+                firstGen = runner.MakeFirstGeneration(runner.InnovationGenerator, runner.GenomeInnovationGenerator, (int)populationSizeUpDown.Value);
             }
 
             Runner_OnNextGeneration(firstGen);

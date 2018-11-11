@@ -67,7 +67,7 @@ namespace SuperIntelligence
         }
 
         #region Static Methods
-        public static Generation MakeFirstGeneration(InnovationGenerator generator, InnovationGenerator genome_generator,
+        public Generation MakeFirstGeneration(InnovationGenerator generator, InnovationGenerator genome_generator,
             int initialPopulationSize)
         {
             // check if there is a Lua implementation of this
@@ -270,7 +270,7 @@ namespace SuperIntelligence
                 }
 
                 if (func == null || error)
-                    generation = generation.Next(generator);
+                    generation = generation.Next(generator, genome_generator);
 
                 OnNextGeneration(generation);
 
