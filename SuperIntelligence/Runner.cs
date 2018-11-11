@@ -70,7 +70,16 @@ namespace SuperIntelligence
             // check if there is a Lua implementation of this
             LuaFunction func = LuaState["MakeFirstGeneration"] as LuaFunction;
             if (func != null)
-                return (Generation)func.Call(generator, initialPopulationSize)?.First();
+            {
+                try
+                {
+                    return (Generation)func.Call(generator, initialPopulationSize)?.First();
+                }
+                catch (Exception e)
+                {
+                    logger.Error(e, "Error running lua code for first generation.");
+                }
+            }
 
             Generation generation = new Generation(0);
             Genome genome = new Genome(0);
@@ -242,9 +251,21 @@ namespace SuperIntelligence
                 OnGenerationFinished(generation);
 
                 LuaFunction func = LuaState["MakeNextGeneration"] as LuaFunction;
+                bool error = false;
                 if (func != null)
-                    generation = (Generation)func.Call(generation, generator).First();
-                else
+                {
+                    try
+                    {
+                        generation = (Generation)func.Call(generation, generator).First();
+                    }
+                    catch (Exception e)
+                    {
+                        error = true;
+                        logger.Error(e, "Error running lua code for next generation.");
+                    }
+                }
+
+                if (func == null || error)
                     generation = generation.Next(generator);
 
                 OnNextGeneration(generation);
