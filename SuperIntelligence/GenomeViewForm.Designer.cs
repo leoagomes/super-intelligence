@@ -104,6 +104,10 @@
             this.runBackgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.runTimer = new System.Windows.Forms.Timer(this.components);
             this.openFirstGenFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.label10 = new System.Windows.Forms.Label();
+            this.luaScriptBrowseButton = new System.Windows.Forms.Button();
+            this.luaScriptTextBox = new System.Windows.Forms.TextBox();
+            this.openLuaScriptDialog = new System.Windows.Forms.OpenFileDialog();
             this.resetButtonRunSettings = new System.Windows.Forms.Button();
             this.mainMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -612,10 +616,13 @@
             // 
             // runSettingsTabPage
             // 
+            this.runSettingsTabPage.Controls.Add(this.label10);
             this.runSettingsTabPage.Controls.Add(this.resetButtonRunSettings);
             this.runSettingsTabPage.Controls.Add(this.runVariablesGroupBox);
+            this.runSettingsTabPage.Controls.Add(this.luaScriptTextBox);
             this.runSettingsTabPage.Controls.Add(this.saveButtonRunSettings);
             this.runSettingsTabPage.Controls.Add(this.gameInstancesUpDown);
+            this.runSettingsTabPage.Controls.Add(this.luaScriptBrowseButton);
             this.runSettingsTabPage.Controls.Add(this.label5);
             this.runSettingsTabPage.Controls.Add(this.groupBox1);
             this.runSettingsTabPage.Controls.Add(this.gameModeComboBox);
@@ -640,7 +647,7 @@
             this.runVariablesGroupBox.Controls.Add(this.label7);
             this.runVariablesGroupBox.Controls.Add(this.label6);
             this.runVariablesGroupBox.Controls.Add(this.label1);
-            this.runVariablesGroupBox.Location = new System.Drawing.Point(9, 161);
+            this.runVariablesGroupBox.Location = new System.Drawing.Point(9, 188);
             this.runVariablesGroupBox.Name = "runVariablesGroupBox";
             this.runVariablesGroupBox.Size = new System.Drawing.Size(227, 150);
             this.runVariablesGroupBox.TabIndex = 8;
@@ -830,7 +837,7 @@
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.randomFirstGenCheckBox);
             this.groupBox1.Controls.Add(this.browseFirstGenButton);
-            this.groupBox1.Location = new System.Drawing.Point(9, 58);
+            this.groupBox1.Location = new System.Drawing.Point(9, 85);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(378, 97);
             this.groupBox1.TabIndex = 5;
@@ -931,6 +938,35 @@
             // 
             this.openFirstGenFileDialog.Filter = "JSON files|*.json|All files|*.*";
             // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(6, 61);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(56, 13);
+            this.label10.TabIndex = 9;
+            this.label10.Text = "Lua script:";
+            // 
+            // luaScriptBrowseButton
+            // 
+            this.luaScriptBrowseButton.Location = new System.Drawing.Point(272, 56);
+            this.luaScriptBrowseButton.Name = "luaScriptBrowseButton";
+            this.luaScriptBrowseButton.Size = new System.Drawing.Size(75, 23);
+            this.luaScriptBrowseButton.TabIndex = 4;
+            this.luaScriptBrowseButton.Text = "Browse";
+            this.luaScriptBrowseButton.UseVisualStyleBackColor = true;
+            this.luaScriptBrowseButton.Click += new System.EventHandler(this.luaScriptBrowseButton_Click);
+            // 
+            // luaScriptTextBox
+            // 
+            this.luaScriptTextBox.Location = new System.Drawing.Point(68, 58);
+            this.luaScriptTextBox.Name = "luaScriptTextBox";
+            this.luaScriptTextBox.Size = new System.Drawing.Size(198, 20);
+            this.luaScriptTextBox.TabIndex = 6;
+            // 
+            // openLuaScriptDialog
+            // 
+            this.openLuaScriptDialog.Filter = "Lua files|*.lua|All files|*.*";
             // resetButtonRunSettings
             // 
             this.resetButtonRunSettings.Location = new System.Drawing.Point(415, 496);
@@ -1072,6 +1108,10 @@
         private System.Windows.Forms.NumericUpDown weightPerturbanceUpDown;
         private System.Windows.Forms.NumericUpDown eitherDisabledUpDown;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox luaScriptTextBox;
+        private System.Windows.Forms.Button luaScriptBrowseButton;
+        private System.Windows.Forms.OpenFileDialog openLuaScriptDialog;
         private System.Windows.Forms.Button resetButtonRunSettings;
     }
 }

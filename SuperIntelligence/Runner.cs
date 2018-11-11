@@ -11,10 +11,13 @@ using System.IO;
 
 using Newtonsoft.Json;
 
+using NLua;
+
 using SuperIntelligence.Game;
 using SuperIntelligence.NEAT;
 
 using static SuperIntelligence.Random.Random;
+
 
 namespace SuperIntelligence
 {
@@ -47,18 +50,40 @@ namespace SuperIntelligence
         public event GenerationDelegate OnGenerationFinished = delegate { };
         public event LoopFinishDelegate OnLoopFinish = delegate { };
 
-        public Runner(string gamePath, int gameInstances)
+        public Lua LuaState;
+
+        public Runner(string gamePath, int gameInstances, string luaScriptPath = "")
         {
             InnovationGenerator = new InnovationGenerator();
             GenomeInnovationGenerator = new InnovationGenerator();
             GameExecutablePath = gamePath;
             GameCount = gameInstances;
+
+            LuaState = new Lua();
+            LuaState.LoadCLRPackage();
+            LuaState["runner"] = this;
+            if (luaScriptPath != string.Empty && File.Exists(luaScriptPath))
+                LuaState.DoFile(luaScriptPath);
         }
 
         #region Static Methods
         public static Generation MakeFirstGeneration(InnovationGenerator generator, InnovationGenerator genome_generator,
             int initialPopulationSize)
         {
+            // check if there is a Lua implementation of this
+            LuaFunction func = LuaState["MakeFirstGeneration"] as LuaFunction;
+            if (func != null)
+            {
+                try
+                {
+                    return (Generation)func.Call(generator, initialPopulationSize)?.First();
+                }
+                catch (Exception e)
+                {
+                    logger.Error(e, "Error running lua code for first generation.");
+                }
+            }
+
             Generation generation = new Generation(0);
             Genome genome = new Genome(0);
 
@@ -81,10 +106,8 @@ namespace SuperIntelligence
                 int currentId = generator.Innovate();
                 genome.AddNode(new Node(currentId, NodeType.Output, int.MaxValue));
 
-                for (int j = 0; j < inputs; j++)
-                {
-                    genome.AddConnection(new Connection(inputIds[j], currentId, Double() * 4f - 2f, true, generator.Innovate()));
-                }
+                foreach (int hiddenId in inputIds)
+                    genome.AddConnection(new Connection(hiddenId, currentId, Double() * 4f - 2f, true, generator.Innovate()));
             }
 
             Species original = new Species(genome);
@@ -230,7 +253,25 @@ namespace SuperIntelligence
 
                 // make next generation
                 OnGenerationFinished(generation);
-                generation = generation.Next(generator, genome_generator);
+
+                LuaFunction func = LuaState["MakeNextGeneration"] as LuaFunction;
+                bool error = false;
+                if (func != null)
+                {
+                    try
+                    {
+                        generation = (Generation)func.Call(generation, generator).First();
+                    }
+                    catch (Exception e)
+                    {
+                        error = true;
+                        logger.Error(e, "Error running lua code for next generation.");
+                    }
+                }
+
+                if (func == null || error)
+                    generation = generation.Next(generator);
+
                 OnNextGeneration(generation);
 
                 // ajustes da mutação

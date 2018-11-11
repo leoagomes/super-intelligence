@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SuperIntelligence.NEAT
 {
-    class Connection
+    public class Connection
     {
         public int InputNode;
         public int OutputNode;
@@ -27,14 +27,14 @@ namespace SuperIntelligence.NEAT
             new Connection(InputNode, OutputNode, Weight, Expressed, InnovationNumber);
     }
 
-    enum NodeType
+    public enum NodeType
     {
         Input,
         Output,
         Hidden
     }
 
-    class Node
+    public class Node
     {
         public int Id;
         public NodeType Type;

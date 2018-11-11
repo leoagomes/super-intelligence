@@ -8,7 +8,7 @@ using static SuperIntelligence.Random.Random;
 
 namespace SuperIntelligence.NEAT
 {
-    class Generation
+    public class Generation
     {
         public int Number;
         public List<Species> Species;
@@ -74,13 +74,6 @@ namespace SuperIntelligence.NEAT
 
             foreach (Species oldSpecies in Species)
             {
-                // remove species with no members
-                if (oldSpecies.Members.Count <= 0)
-                {
-                    Species.Remove(oldSpecies);
-                    continue;
-                }
-
                 // create a new species for the new genome with a random representative from
                 // the current species
                 Species newSpecies = new Species(Choose(oldSpecies.Members.ToArray()));
@@ -137,5 +130,11 @@ namespace SuperIntelligence.NEAT
 
             return next;
         }
+
+        public void RemoveEmptySpecies() =>
+            Species.RemoveAll(s => s.Members.Count == 0);
+
+        public Species RandomSpecies() =>
+            Choose(Species.ToArray());
     }
 }

@@ -6,7 +6,7 @@ using static SuperIntelligence.Random.Random;
 
 namespace SuperIntelligence.NEAT
 {
-    class Genome : IComparable<Genome>
+    public class Genome : IComparable<Genome>
     {
         #region Variables
         public int Id;

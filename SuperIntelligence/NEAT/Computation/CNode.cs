@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SuperIntelligence.NEAT.Computation
 {
-    class CNode : IValueProvider<double>
+    public class CNode : IValueProvider<double>
     {
         private bool recalculate;
         private double value;

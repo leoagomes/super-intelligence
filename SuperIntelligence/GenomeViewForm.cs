@@ -837,6 +837,17 @@ namespace SuperIntelligence
         /// <param name="e"></param>
         private void eitherDisabledUpDown_ValueChanged(object sender, EventArgs e) =>
             Genome.EitherDisabledChance = (double)eitherDisabledUpDown.Value;
+
+        /// <summary>
+        /// Lua script browse button handler.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void luaScriptBrowseButton_Click(object sender, EventArgs e)
+        {
+            if (openLuaScriptDialog.ShowDialog() == DialogResult.OK)
+                luaScriptTextBox.Text = openLuaScriptDialog.FileName;
+        }
         #endregion
 
         #endregion
@@ -852,7 +863,7 @@ namespace SuperIntelligence
             string generationFileName = e.Argument as string;
             Generation firstGen;
 
-            runner = new Runner(applicationSettings.GameFile, (int)gameInstancesUpDown.Value);
+            runner = new Runner(applicationSettings.GameFile, (int)gameInstancesUpDown.Value, luaScriptTextBox.Text);
 
             if (generationFileName != string.Empty)
             {

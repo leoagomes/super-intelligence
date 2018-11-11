@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SuperIntelligence.NEAT
 {
-    class InnovationGenerator
+    public class InnovationGenerator
     {
         public int Innovation { get; private set; }
 
