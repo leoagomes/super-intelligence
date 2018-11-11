@@ -8,12 +8,14 @@ namespace SuperIntelligence.NEAT
 {
     class Genome : IComparable<Genome>
     {
+        #region Variables
         public int Id;
         public double Fitness = 0;
 
         public Dictionary<int, Connection> Connections;
         public Dictionary<int, Node> Nodes;
 
+        #region Probabilities and Coefficients
         /// <summary>
         /// The probability of a weight being mutated.
         /// </summary>
@@ -49,6 +51,8 @@ namespace SuperIntelligence.NEAT
         /// Compatibility function weight coefficient.
         /// </summary>
         public static double WeightCoefficient = 0.4;
+        #endregion
+        #endregion
 
         public Genome(int id)
         {

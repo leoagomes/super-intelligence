@@ -23,6 +23,7 @@ namespace SuperIntelligence
         public static slf4net.ILogger logger = slf4net.LoggerFactory.GetLogger(typeof(Runner));
 
         public InnovationGenerator InnovationGenerator;
+        public InnovationGenerator GenomeInnovationGenerator;
         public string GameExecutablePath;
 
         public bool ShouldStop = false;
@@ -49,12 +50,14 @@ namespace SuperIntelligence
         public Runner(string gamePath, int gameInstances)
         {
             InnovationGenerator = new InnovationGenerator();
+            GenomeInnovationGenerator = new InnovationGenerator();
             GameExecutablePath = gamePath;
             GameCount = gameInstances;
         }
 
         #region Static Methods
-        public static Generation MakeFirstGeneration(InnovationGenerator generator, int initialPopulationSize)
+        public static Generation MakeFirstGeneration(InnovationGenerator generator, InnovationGenerator genome_generator,
+            int initialPopulationSize)
         {
             Generation generation = new Generation(0);
             Genome genome = new Genome(0);
@@ -91,7 +94,7 @@ namespace SuperIntelligence
             {
                 Genome g = genome.Copy();
                 g.Mutate(generator);
-                g.Id = i;
+                g.Id = genome_generator.Innovate();
 
                 original.AddGenome(g);
             }
@@ -145,6 +148,7 @@ namespace SuperIntelligence
 
             // do the run
             InnovationGenerator generator = InnovationGenerator;
+            InnovationGenerator genome_generator = GenomeInnovationGenerator;
             Generation generation = firstGeneration;
             while (!ShouldStop)
             {
@@ -226,7 +230,7 @@ namespace SuperIntelligence
 
                 // make next generation
                 OnGenerationFinished(generation);
-                generation = generation.Next(generator);
+                generation = generation.Next(generator, genome_generator);
                 OnNextGeneration(generation);
 
                 // ajustes da mutação

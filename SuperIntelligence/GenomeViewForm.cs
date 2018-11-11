@@ -189,9 +189,9 @@ namespace SuperIntelligence
 
             // labels
             // generation tab
-            generationBestGenomeLinkLabel.Text = "Best Genome Fitness: " + bestIndividual.Index.ToString();
+            generationBestGenomeLinkLabel.Text = "Best Genome Fitness: " + bestIndividual.Genome.Id.ToString();
             // species tab
-            speciesTabBestGenomeLinkLabel.Text = "Best Genome Fitness: " + bestIndividual.Index.ToString();
+            speciesTabBestGenomeLinkLabel.Text = "Best Genome Fitness: " + bestIndividual.Genome.Id.ToString();
         }
 
         /// <summary>
@@ -347,79 +347,12 @@ namespace SuperIntelligence
         }
 
         /// <summary>
-        /// 'Run Settings' -> 'Auto-generate first generation' check box handler.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void randomFirstGenCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            CheckBox box = sender as CheckBox;
-
-            browseFirstGenButton.Enabled = !box.Checked;
-            generationFileTextBox.Enabled = !box.Checked;
-
-            populationSizeUpDown.Enabled = box.Checked;
-        }
-
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void clearDataToolStripMenuItem_Click(object sender, EventArgs e) =>
             ClearData();
-
-        /// <summary>
-        /// Start/Stop button click handler.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void startStopRunButton_Click(object sender, EventArgs e)
-        {
-            // when the user press the Start button
-            if (!runStarted)
-            {
-                // clear all data in UI
-                ClearData();
-
-                if (!randomFirstGenCheckBox.Checked && generationFileTextBox.Text == string.Empty)
-                {
-                    MessageBox.Show("Invalid first generation.", "Error starting run.");
-                    return;
-                }
-
-                // check game mode
-                if (!Enum.TryParse(gameModeComboBox.Text, out gameMode))
-                {
-                    MessageBox.Show("Invalid game mode '" + gameModeComboBox.Text + "'.", "Error starting run.");
-                    return;
-                }
-
-                // start the work
-                runBackgroundWorker.RunWorkerAsync(randomFirstGenCheckBox.Checked ?
-                    string.Empty : generationFileTextBox.Text);
-
-                // save the current time and reveal and start the timer
-                runStartTime = DateTime.Now;
-                runTimer.Start();
-
-                ChangeStartStopButton(true, "Stop");
-                runStarted = true;
-            }
-
-            // when the user press the Stop button
-            else
-            {
-                // stopping the runner loop
-                if (runner != null)
-                {
-                    runner.ShouldStop = true;
-                }
-
-                ChangeStartStopButton(false, "Wait...");
-                runStarted = false;
-            }
-        }
 
         /// <summary>
         /// Controls the timer from 'Run' tab.
@@ -723,6 +656,7 @@ namespace SuperIntelligence
                 GenerateGenomeTabDesign(genome);
                 // changing to the genome tab
                 mainTabControl.SelectedTab = genomeTabPage;
+                Console.WriteLine("Genome id: {0}", genome.Id);
             }
             else if (node.Tag is Species)
             {
@@ -742,6 +676,7 @@ namespace SuperIntelligence
             }
         }
 
+        #region Generation
         /// <summary>
         /// 'Generation' tab -> 'Best Genome Fitness' click handler, changes the active tab to 'Genome'.
         /// </summary>
@@ -754,7 +689,9 @@ namespace SuperIntelligence
             // regenerating genome tab
             GenerateGenomeTabDesign(bestIndividual.Genome);
         }
+        #endregion
 
+        #region Species
         /// <summary>
         /// 'Species' tab -> 'Best Genome Fitness' click handler, changes the active tab to 'Genome'.
         /// </summary>
@@ -766,6 +703,77 @@ namespace SuperIntelligence
             mainTabControl.SelectedTab = genomeTabPage;
             // regenerating genome tab
             GenerateGenomeTabDesign(bestIndividual.Genome);
+        }
+        #endregion
+
+        #region Run
+        /// <summary>
+        /// Start/Stop button click handler.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void startStopRunButton_Click(object sender, EventArgs e)
+        {
+            // when the user press the Start button
+            if (!runStarted)
+            {
+                // clear all data in UI
+                ClearData();
+
+                if (!randomFirstGenCheckBox.Checked && generationFileTextBox.Text == string.Empty)
+                {
+                    MessageBox.Show("Invalid first generation.", "Error starting run.");
+                    return;
+                }
+
+                // check game mode
+                if (!Enum.TryParse(gameModeComboBox.Text, out gameMode))
+                {
+                    MessageBox.Show("Invalid game mode '" + gameModeComboBox.Text + "'.", "Error starting run.");
+                    return;
+                }
+
+                // start the work
+                runBackgroundWorker.RunWorkerAsync(randomFirstGenCheckBox.Checked ?
+                    string.Empty : generationFileTextBox.Text);
+
+                // save the current time and reveal and start the timer
+                runStartTime = DateTime.Now;
+                runTimer.Start();
+
+                ChangeStartStopButton(true, "Stop");
+                runStarted = true;
+            }
+
+            // when the user press the Stop button
+            else
+            {
+                // stopping the runner loop
+                if (runner != null)
+                {
+                    runner.ShouldStop = true;
+                }
+
+                ChangeStartStopButton(false, "Wait...");
+                runStarted = false;
+            }
+        }
+        #endregion
+
+        #region Run Settings
+        /// <summary>
+        /// 'Run Settings' tab -> 'Auto-generate first generation' check box handler.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void randomFirstGenCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckBox box = sender as CheckBox;
+
+            browseFirstGenButton.Enabled = !box.Checked;
+            generationFileTextBox.Enabled = !box.Checked;
+
+            populationSizeUpDown.Enabled = box.Checked;
         }
 
         /// <summary>
@@ -779,11 +787,58 @@ namespace SuperIntelligence
             settings.SaveSettings();
         }
 
+        /// <summary>
+        /// 'Run Settings' tab -> 'Reset' button click handler, reset Run Settings on UI without saving into a file.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void resetButtonRunSettings_Click(object sender, EventArgs e)
         {
             settings.s.ResetSettings();
             SetUIRunSettings();
         }
+
+        /// <summary>
+        /// 'Run Settings' tab -> 'Weight mutation' UpDown field.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void weightMutationUpDown_ValueChanged(object sender, EventArgs e) =>
+            Genome.WeightMutationProbability = (double)weightMutationUpDown.Value;
+
+        /// <summary>
+        /// 'Run Settings' tab -> 'Weight perturbance' UpDown field.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void weightPerturbanceUpDown_ValueChanged(object sender, EventArgs e) =>
+            Genome.WeightPerturbanceProbability = (double)weightPerturbanceUpDown.Value;
+
+        /// <summary>
+        /// 'Run Settings' tab -> 'Node creation' UpDown field.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void nodeCreationUpDown_ValueChanged(object sender, EventArgs e) =>
+            Genome.NodeCreationProbability = (double)nodeCreationUpDown.Value;
+
+        /// <summary>
+        /// 'Run Settings' tab -> 'Connection creation' UpDown field.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void connectionCreationUpDown_ValueChanged(object sender, EventArgs e) =>
+            Genome.ConnectionCreationProbability = (double)connectionCreationUpDown.Value;
+
+        /// <summary>
+        /// 'Run Settings' tab -> 'Either disabled' UpDown field.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void eitherDisabledUpDown_ValueChanged(object sender, EventArgs e) =>
+            Genome.EitherDisabledChance = (double)eitherDisabledUpDown.Value;
+        #endregion
+
         #endregion
 
         #region Misc
@@ -805,7 +860,7 @@ namespace SuperIntelligence
             }
             else
             {
-                firstGen = Runner.MakeFirstGeneration(runner.InnovationGenerator, (int)populationSizeUpDown.Value);
+                firstGen = Runner.MakeFirstGeneration(runner.InnovationGenerator, runner.GenomeInnovationGenerator, (int)populationSizeUpDown.Value);
             }
 
             Runner_OnNextGeneration(firstGen);
@@ -865,20 +920,5 @@ namespace SuperIntelligence
             return new KeyValuePair<int, string>(key, value);
         }
         #endregion
-
-        private void weightMutationUpDown_ValueChanged(object sender, EventArgs e) =>
-            Genome.WeightMutationProbability = (double)weightMutationUpDown.Value;
-
-        private void weightPerturbanceUpDown_ValueChanged(object sender, EventArgs e) =>
-            Genome.WeightPerturbanceProbability = (double)weightPerturbanceUpDown.Value;
-
-        private void nodeCreationUpDown_ValueChanged(object sender, EventArgs e) =>
-            Genome.NodeCreationProbability = (double)nodeCreationUpDown.Value;
-
-        private void connectionCreationUpDown_ValueChanged(object sender, EventArgs e) =>
-            Genome.ConnectionCreationProbability = (double)connectionCreationUpDown.Value;
-
-        private void eitherDisabledUpDown_ValueChanged(object sender, EventArgs e) =>
-            Genome.EitherDisabledChance = (double)eitherDisabledUpDown.Value;
     }
 }

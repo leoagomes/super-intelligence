@@ -18,6 +18,16 @@ namespace SuperIntelligence.NEAT
         /// </summary>
         public static double InterspeciesMatingChance = 0.01;
 
+        /// <summary>
+        /// Number of reproductions needed to generate another Generation.
+        /// </summary>
+        public int ReproductionsLeft = 0;
+
+        /// <summary>
+        /// Number of times a genome will be used to reproduce.
+        /// </summary>
+        public int ReproductionsPerGenome = 5;
+
         public Generation(int number)
         {
             Number = number;
@@ -57,7 +67,7 @@ namespace SuperIntelligence.NEAT
         /// </summary>
         /// <param name="generator"></param>
         /// <returns></returns>
-        public Generation Next(InnovationGenerator generator)
+        public Generation Next(InnovationGenerator generator, InnovationGenerator genome_generator)
         {
             Generation next = new Generation(Number + 1);
             int genomeId = 0;
@@ -84,18 +94,29 @@ namespace SuperIntelligence.NEAT
                 if (oldSpecies.Members.Count > 5)
                     next.AddGenome(top);
 
-                foreach (Genome genome in oldSpecies.Members)
+                // updating the number of reproductions needed, excluding the top genome
+                ReproductionsLeft = oldSpecies.Members.Count / ReproductionsPerGenome;
+
+                // Removing any genome that has a bad performance
+                int removedGenomes = oldSpecies.Members.RemoveAll(item => item.Fitness <= 0);
+
+                // reproducing the top genome with others
+                // we need to begin at 1 because the first member is always the top one
+                for (int i = 1; i < ReproductionsLeft + 1; i++)
                 {
-                    if (top == genome)
-                        continue;
+                    for (int j = 0; j < ReproductionsPerGenome ; j++)
+                    {
+                        Genome child = Genome.CrossOver(top, sortedMembers.ElementAt(i));
+                        child.Mutate(generator);
+                        child.Id = genome_generator.Innovate();
+                        next.AddGenome(child);
+                    }
+                }
 
-                    if (genome.Fitness <= -4000.0) // don't take individuals that caused exceptions (or had an insanely bad run)
-                        continue;
-
-                    Genome child = Genome.CrossOver(top, genome);
-                    child.Mutate(generator);
-                    child.Id = genomeId++;
-                    next.AddGenome(child);
+                Console.WriteLine("next generation genomes:\n");
+                foreach (Genome g in next.Species[0].Members)
+                {
+                    Console.WriteLine("#{0}", g.Id);
                 }
             }
 
