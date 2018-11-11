@@ -79,6 +79,11 @@
             this.genomeNameLabel = new System.Windows.Forms.Label();
             this.runSettingsTabPage = new System.Windows.Forms.TabPage();
             this.runVariablesGroupBox = new System.Windows.Forms.GroupBox();
+            this.eitherDisabledUpDown = new System.Windows.Forms.NumericUpDown();
+            this.connectionCreationUpDown = new System.Windows.Forms.NumericUpDown();
+            this.nodeCreationUpDown = new System.Windows.Forms.NumericUpDown();
+            this.weightPerturbanceUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label9 = new System.Windows.Forms.Label();
             this.weightMutationUpDown = new System.Windows.Forms.NumericUpDown();
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
@@ -99,11 +104,10 @@
             this.runBackgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.runTimer = new System.Windows.Forms.Timer(this.components);
             this.openFirstGenFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.weightPerturbanceUpDown = new System.Windows.Forms.NumericUpDown();
-            this.nodeCreationUpDown = new System.Windows.Forms.NumericUpDown();
-            this.connectionCreationUpDown = new System.Windows.Forms.NumericUpDown();
-            this.label9 = new System.Windows.Forms.Label();
-            this.eitherDisabledUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label10 = new System.Windows.Forms.Label();
+            this.luaScriptBrowseButton = new System.Windows.Forms.Button();
+            this.luaScriptTextBox = new System.Windows.Forms.TextBox();
+            this.openLuaScriptDialog = new System.Windows.Forms.OpenFileDialog();
             this.mainMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -125,14 +129,14 @@
             ((System.ComponentModel.ISupportInitialize)(this.genomePictureBox)).BeginInit();
             this.runSettingsTabPage.SuspendLayout();
             this.runVariablesGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.eitherDisabledUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.connectionCreationUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nodeCreationUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.weightPerturbanceUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.weightMutationUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gameInstancesUpDown)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.populationSizeUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.weightPerturbanceUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nodeCreationUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.connectionCreationUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.eitherDisabledUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // mainMenuStrip
@@ -611,9 +615,12 @@
             // 
             // runSettingsTabPage
             // 
+            this.runSettingsTabPage.Controls.Add(this.label10);
             this.runSettingsTabPage.Controls.Add(this.runVariablesGroupBox);
+            this.runSettingsTabPage.Controls.Add(this.luaScriptTextBox);
             this.runSettingsTabPage.Controls.Add(this.saveButtonRunSettings);
             this.runSettingsTabPage.Controls.Add(this.gameInstancesUpDown);
+            this.runSettingsTabPage.Controls.Add(this.luaScriptBrowseButton);
             this.runSettingsTabPage.Controls.Add(this.label5);
             this.runSettingsTabPage.Controls.Add(this.groupBox1);
             this.runSettingsTabPage.Controls.Add(this.gameModeComboBox);
@@ -638,12 +645,101 @@
             this.runVariablesGroupBox.Controls.Add(this.label7);
             this.runVariablesGroupBox.Controls.Add(this.label6);
             this.runVariablesGroupBox.Controls.Add(this.label1);
-            this.runVariablesGroupBox.Location = new System.Drawing.Point(9, 161);
+            this.runVariablesGroupBox.Location = new System.Drawing.Point(9, 188);
             this.runVariablesGroupBox.Name = "runVariablesGroupBox";
             this.runVariablesGroupBox.Size = new System.Drawing.Size(227, 150);
             this.runVariablesGroupBox.TabIndex = 8;
             this.runVariablesGroupBox.TabStop = false;
             this.runVariablesGroupBox.Text = "Variables";
+            // 
+            // eitherDisabledUpDown
+            // 
+            this.eitherDisabledUpDown.DecimalPlaces = 4;
+            this.eitherDisabledUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.eitherDisabledUpDown.Location = new System.Drawing.Point(119, 123);
+            this.eitherDisabledUpDown.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.eitherDisabledUpDown.Name = "eitherDisabledUpDown";
+            this.eitherDisabledUpDown.Size = new System.Drawing.Size(97, 20);
+            this.eitherDisabledUpDown.TabIndex = 1;
+            this.eitherDisabledUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.eitherDisabledUpDown.ValueChanged += new System.EventHandler(this.eitherDisabledUpDown_ValueChanged);
+            // 
+            // connectionCreationUpDown
+            // 
+            this.connectionCreationUpDown.DecimalPlaces = 4;
+            this.connectionCreationUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.connectionCreationUpDown.Location = new System.Drawing.Point(119, 97);
+            this.connectionCreationUpDown.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.connectionCreationUpDown.Name = "connectionCreationUpDown";
+            this.connectionCreationUpDown.Size = new System.Drawing.Size(97, 20);
+            this.connectionCreationUpDown.TabIndex = 1;
+            this.connectionCreationUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.connectionCreationUpDown.ValueChanged += new System.EventHandler(this.connectionCreationUpDown_ValueChanged);
+            // 
+            // nodeCreationUpDown
+            // 
+            this.nodeCreationUpDown.DecimalPlaces = 4;
+            this.nodeCreationUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.nodeCreationUpDown.Location = new System.Drawing.Point(119, 71);
+            this.nodeCreationUpDown.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nodeCreationUpDown.Name = "nodeCreationUpDown";
+            this.nodeCreationUpDown.Size = new System.Drawing.Size(97, 20);
+            this.nodeCreationUpDown.TabIndex = 1;
+            this.nodeCreationUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.nodeCreationUpDown.ValueChanged += new System.EventHandler(this.nodeCreationUpDown_ValueChanged);
+            // 
+            // weightPerturbanceUpDown
+            // 
+            this.weightPerturbanceUpDown.DecimalPlaces = 4;
+            this.weightPerturbanceUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.weightPerturbanceUpDown.Location = new System.Drawing.Point(119, 45);
+            this.weightPerturbanceUpDown.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.weightPerturbanceUpDown.Name = "weightPerturbanceUpDown";
+            this.weightPerturbanceUpDown.Size = new System.Drawing.Size(97, 20);
+            this.weightPerturbanceUpDown.TabIndex = 1;
+            this.weightPerturbanceUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.weightPerturbanceUpDown.ValueChanged += new System.EventHandler(this.weightPerturbanceUpDown_ValueChanged);
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(6, 125);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(79, 13);
+            this.label9.TabIndex = 0;
+            this.label9.Text = "Either disabled:";
             // 
             // weightMutationUpDown
             // 
@@ -739,7 +835,7 @@
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.randomFirstGenCheckBox);
             this.groupBox1.Controls.Add(this.browseFirstGenButton);
-            this.groupBox1.Location = new System.Drawing.Point(9, 58);
+            this.groupBox1.Location = new System.Drawing.Point(9, 85);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(378, 97);
             this.groupBox1.TabIndex = 5;
@@ -840,94 +936,35 @@
             // 
             this.openFirstGenFileDialog.Filter = "JSON files|*.json|All files|*.*";
             // 
-            // weightPerturbanceUpDown
+            // label10
             // 
-            this.weightPerturbanceUpDown.DecimalPlaces = 4;
-            this.weightPerturbanceUpDown.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.weightPerturbanceUpDown.Location = new System.Drawing.Point(119, 45);
-            this.weightPerturbanceUpDown.Maximum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.weightPerturbanceUpDown.Name = "weightPerturbanceUpDown";
-            this.weightPerturbanceUpDown.Size = new System.Drawing.Size(97, 20);
-            this.weightPerturbanceUpDown.TabIndex = 1;
-            this.weightPerturbanceUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.weightPerturbanceUpDown.ValueChanged += new System.EventHandler(this.weightPerturbanceUpDown_ValueChanged);
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(6, 61);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(56, 13);
+            this.label10.TabIndex = 9;
+            this.label10.Text = "Lua script:";
             // 
-            // nodeCreationUpDown
+            // luaScriptBrowseButton
             // 
-            this.nodeCreationUpDown.DecimalPlaces = 4;
-            this.nodeCreationUpDown.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.nodeCreationUpDown.Location = new System.Drawing.Point(119, 71);
-            this.nodeCreationUpDown.Maximum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nodeCreationUpDown.Name = "nodeCreationUpDown";
-            this.nodeCreationUpDown.Size = new System.Drawing.Size(97, 20);
-            this.nodeCreationUpDown.TabIndex = 1;
-            this.nodeCreationUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.nodeCreationUpDown.ValueChanged += new System.EventHandler(this.nodeCreationUpDown_ValueChanged);
+            this.luaScriptBrowseButton.Location = new System.Drawing.Point(272, 56);
+            this.luaScriptBrowseButton.Name = "luaScriptBrowseButton";
+            this.luaScriptBrowseButton.Size = new System.Drawing.Size(75, 23);
+            this.luaScriptBrowseButton.TabIndex = 4;
+            this.luaScriptBrowseButton.Text = "Browse";
+            this.luaScriptBrowseButton.UseVisualStyleBackColor = true;
+            this.luaScriptBrowseButton.Click += new System.EventHandler(this.luaScriptBrowseButton_Click);
             // 
-            // connectionCreationUpDown
+            // luaScriptTextBox
             // 
-            this.connectionCreationUpDown.DecimalPlaces = 4;
-            this.connectionCreationUpDown.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.connectionCreationUpDown.Location = new System.Drawing.Point(119, 97);
-            this.connectionCreationUpDown.Maximum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.connectionCreationUpDown.Name = "connectionCreationUpDown";
-            this.connectionCreationUpDown.Size = new System.Drawing.Size(97, 20);
-            this.connectionCreationUpDown.TabIndex = 1;
-            this.connectionCreationUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.connectionCreationUpDown.ValueChanged += new System.EventHandler(this.connectionCreationUpDown_ValueChanged);
+            this.luaScriptTextBox.Location = new System.Drawing.Point(68, 58);
+            this.luaScriptTextBox.Name = "luaScriptTextBox";
+            this.luaScriptTextBox.Size = new System.Drawing.Size(198, 20);
+            this.luaScriptTextBox.TabIndex = 6;
             // 
-            // label9
+            // openLuaScriptDialog
             // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(6, 125);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(79, 13);
-            this.label9.TabIndex = 0;
-            this.label9.Text = "Either disabled:";
-            // 
-            // eitherDisabledUpDown
-            // 
-            this.eitherDisabledUpDown.DecimalPlaces = 4;
-            this.eitherDisabledUpDown.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.eitherDisabledUpDown.Location = new System.Drawing.Point(119, 123);
-            this.eitherDisabledUpDown.Maximum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.eitherDisabledUpDown.Name = "eitherDisabledUpDown";
-            this.eitherDisabledUpDown.Size = new System.Drawing.Size(97, 20);
-            this.eitherDisabledUpDown.TabIndex = 1;
-            this.eitherDisabledUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.eitherDisabledUpDown.ValueChanged += new System.EventHandler(this.eitherDisabledUpDown_ValueChanged);
+            this.openLuaScriptDialog.Filter = "Lua files|*.lua|All files|*.*";
             // 
             // GenomeViewForm
             // 
@@ -969,15 +1006,15 @@
             this.runSettingsTabPage.PerformLayout();
             this.runVariablesGroupBox.ResumeLayout(false);
             this.runVariablesGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.eitherDisabledUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.connectionCreationUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nodeCreationUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.weightPerturbanceUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.weightMutationUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gameInstancesUpDown)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.populationSizeUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.weightPerturbanceUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nodeCreationUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.connectionCreationUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.eitherDisabledUpDown)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1060,5 +1097,9 @@
         private System.Windows.Forms.NumericUpDown weightPerturbanceUpDown;
         private System.Windows.Forms.NumericUpDown eitherDisabledUpDown;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox luaScriptTextBox;
+        private System.Windows.Forms.Button luaScriptBrowseButton;
+        private System.Windows.Forms.OpenFileDialog openLuaScriptDialog;
     }
 }

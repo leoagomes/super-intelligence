@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SuperIntelligence.NEAT
 {
-    class Species
+    public class Species
     {
         public static double CompatibilityThreshold = 3.0;
 
@@ -25,6 +25,12 @@ namespace SuperIntelligence.NEAT
 
         public void AddGenome(Genome genome) =>
             Members.Add(genome);
+
+        public Genome RandomMember() =>
+            Random.Random.Choose(Members.ToArray());
+
+        public List<Genome> SortedMembers() =>
+            Members.OrderByDescending(m => m.Fitness).ToList();
     }
 
 }

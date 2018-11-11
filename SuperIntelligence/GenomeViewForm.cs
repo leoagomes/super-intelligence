@@ -776,7 +776,7 @@ namespace SuperIntelligence
             string generationFileName = e.Argument as string;
             Generation firstGen;
 
-            runner = new Runner(applicationSettings.GameFile, (int)gameInstancesUpDown.Value);
+            runner = new Runner(applicationSettings.GameFile, (int)gameInstancesUpDown.Value, luaScriptTextBox.Text);
 
             if (generationFileName != string.Empty)
             {
@@ -784,7 +784,7 @@ namespace SuperIntelligence
             }
             else
             {
-                firstGen = Runner.MakeFirstGeneration(runner.InnovationGenerator, (int)populationSizeUpDown.Value);
+                firstGen = runner.MakeFirstGeneration(runner.InnovationGenerator, (int)populationSizeUpDown.Value);
             }
 
             Runner_OnNextGeneration(firstGen);
@@ -859,5 +859,11 @@ namespace SuperIntelligence
 
         private void eitherDisabledUpDown_ValueChanged(object sender, EventArgs e) =>
             Genome.EitherDisabledChance = (double)eitherDisabledUpDown.Value;
+
+        private void luaScriptBrowseButton_Click(object sender, EventArgs e)
+        {
+            if (openLuaScriptDialog.ShowDialog() == DialogResult.OK)
+                luaScriptTextBox.Text = openLuaScriptDialog.FileName;
+        }
     }
 }

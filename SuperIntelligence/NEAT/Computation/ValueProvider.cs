@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SuperIntelligence.NEAT.Computation
 {
-    class ConstantProvider<T> : IValueProvider<T>
+    public class ConstantProvider<T> : IValueProvider<T>
     {
         public T Constant;
 
@@ -23,7 +23,7 @@ namespace SuperIntelligence.NEAT.Computation
             Constant;
     }
 
-    interface IValueProvider<T>
+    public interface IValueProvider<T>
     {
         T GetValue();
     }

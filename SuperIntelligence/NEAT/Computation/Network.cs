@@ -8,7 +8,7 @@ using SuperIntelligence.NEAT.Computation;
 
 namespace SuperIntelligence.NEAT
 {
-    class Network
+    public class Network
     {
         List<ConstantProvider<double>> Inputs = new List<ConstantProvider<double>>();
         List<CNode> Outputs = new List<CNode>();
