@@ -108,6 +108,7 @@
             this.luaScriptBrowseButton = new System.Windows.Forms.Button();
             this.luaScriptTextBox = new System.Windows.Forms.TextBox();
             this.openLuaScriptDialog = new System.Windows.Forms.OpenFileDialog();
+            this.resetButtonRunSettings = new System.Windows.Forms.Button();
             this.mainMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -616,6 +617,7 @@
             // runSettingsTabPage
             // 
             this.runSettingsTabPage.Controls.Add(this.label10);
+            this.runSettingsTabPage.Controls.Add(this.resetButtonRunSettings);
             this.runSettingsTabPage.Controls.Add(this.runVariablesGroupBox);
             this.runSettingsTabPage.Controls.Add(this.luaScriptTextBox);
             this.runSettingsTabPage.Controls.Add(this.saveButtonRunSettings);
@@ -965,6 +967,15 @@
             // openLuaScriptDialog
             // 
             this.openLuaScriptDialog.Filter = "Lua files|*.lua|All files|*.*";
+            // resetButtonRunSettings
+            // 
+            this.resetButtonRunSettings.Location = new System.Drawing.Point(415, 496);
+            this.resetButtonRunSettings.Name = "resetButtonRunSettings";
+            this.resetButtonRunSettings.Size = new System.Drawing.Size(75, 23);
+            this.resetButtonRunSettings.TabIndex = 9;
+            this.resetButtonRunSettings.Text = "Reset";
+            this.resetButtonRunSettings.UseVisualStyleBackColor = true;
+            this.resetButtonRunSettings.Click += new System.EventHandler(this.resetButtonRunSettings_Click);
             // 
             // GenomeViewForm
             // 
@@ -1101,5 +1112,6 @@
         private System.Windows.Forms.TextBox luaScriptTextBox;
         private System.Windows.Forms.Button luaScriptBrowseButton;
         private System.Windows.Forms.OpenFileDialog openLuaScriptDialog;
+        private System.Windows.Forms.Button resetButtonRunSettings;
     }
 }

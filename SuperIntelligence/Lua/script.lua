@@ -78,7 +78,7 @@ function MakeNextGeneration(previousGeneration, innovationGenerator)
                 local child = Genome.CrossOver(top, genome)
                 child:Mutate(innovationGenerator)
                 child.Id = genomeId
-                genomeID = genomeId + 1
+                genomeId = genomeId + 1
                 next:AddGenome(child)
             end
         end
