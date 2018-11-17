@@ -393,6 +393,8 @@ namespace SuperIntelligence
             nodeCreationUpDown.Value = settings.s.nodeCreation;
             connectionCreationUpDown.Value = settings.s.connectionCreation;
             eitherDisabledUpDown.Value = settings.s.eitherDisabled;
+
+            luaScriptTextBox.Text = settings.s.luaScriptFile;
         }
 
         /// <summary>
@@ -412,6 +414,8 @@ namespace SuperIntelligence
             settings.s.nodeCreation = decimal.Parse(nodeCreationUpDown.Value.ToString());
             settings.s.connectionCreation = decimal.Parse(connectionCreationUpDown.Value.ToString());
             settings.s.eitherDisabled = decimal.Parse(eitherDisabledUpDown.Value.ToString());
+
+            settings.s.luaScriptFile = luaScriptTextBox.Text;
         }
         #endregion
 

@@ -21,6 +21,7 @@ namespace SuperIntelligence.Data
         public decimal nodeCreation { get; set; }
         public decimal connectionCreation { get; set; }
         public decimal eitherDisabled { get; set; }
+        public string luaScriptFile { get; set; }
 
         /// <summary>
         /// Default constructor. Generates a default setting.
@@ -45,7 +46,7 @@ namespace SuperIntelligence.Data
         /// <param name="eitherDisabled"></param>
         public RunSettings(string generationFile, int gameMode, int gameInstances, int initPopSize, bool autoGenerate,
             decimal weightMutation, decimal weightPerturbance, decimal nodeCreation, decimal connectionCreation,
-            decimal eitherDisabled)
+            decimal eitherDisabled, string luaScriptFile)
         {
             this.gameMode = gameMode;
             this.gameInstances = gameInstances;
@@ -59,6 +60,8 @@ namespace SuperIntelligence.Data
             this.nodeCreation = nodeCreation;
             this.connectionCreation = connectionCreation;
             this.eitherDisabled = eitherDisabled;
+
+            this.luaScriptFile = luaScriptFile;
         }
 
         /// <summary>
@@ -79,6 +82,8 @@ namespace SuperIntelligence.Data
             nodeCreation = 0.3M;
             connectionCreation = 0.8M;
             eitherDisabled = 0.25M;
+
+            luaScriptFile = "";
         }
     }
 }
