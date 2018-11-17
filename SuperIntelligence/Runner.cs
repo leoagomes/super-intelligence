@@ -67,7 +67,7 @@ namespace SuperIntelligence
         }
 
         #region Static Methods
-        public Generation MakeFirstGeneration(InnovationGenerator generator, InnovationGenerator genome_generator,
+        public Generation MakeFirstGeneration(InnovationGenerator generator, InnovationGenerator genomeGenerator,
             int initialPopulationSize)
         {
             // check if there is a Lua implementation of this
@@ -117,7 +117,7 @@ namespace SuperIntelligence
             {
                 Genome g = genome.Copy();
                 g.Mutate(generator);
-                g.Id = genome_generator.Innovate();
+                g.Id = genomeGenerator.Innovate();
 
                 original.AddGenome(g);
             }
@@ -171,7 +171,7 @@ namespace SuperIntelligence
 
             // do the run
             InnovationGenerator generator = InnovationGenerator;
-            InnovationGenerator genome_generator = GenomeInnovationGenerator;
+            InnovationGenerator genomeGenerator = GenomeInnovationGenerator;
             Generation generation = firstGeneration;
             while (!ShouldStop)
             {
@@ -260,7 +260,7 @@ namespace SuperIntelligence
                 {
                     try
                     {
-                        generation = (Generation)func.Call(generation, generator).First();
+                        generation = (Generation)func.Call(generation, generator, genomeGenerator).First();
                     }
                     catch (Exception e)
                     {
@@ -270,7 +270,7 @@ namespace SuperIntelligence
                 }
 
                 if (func == null || error)
-                    generation = generation.Next(generator, genome_generator);
+                    generation = generation.Next(generator, genomeGenerator);
 
                 OnNextGeneration(generation);
 

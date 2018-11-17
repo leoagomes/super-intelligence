@@ -18,16 +18,6 @@ namespace SuperIntelligence.NEAT
         /// </summary>
         public static double InterspeciesMatingChance = 0.01;
 
-        /// <summary>
-        /// Number of reproductions needed to generate another Generation.
-        /// </summary>
-        public int ReproductionsLeft = 0;
-
-        /// <summary>
-        /// Number of times a genome will be used to reproduce.
-        /// </summary>
-        public int ReproductionsPerGenome = 5;
-
         public Generation(int number)
         {
             Number = number;
@@ -67,10 +57,12 @@ namespace SuperIntelligence.NEAT
         /// </summary>
         /// <param name="generator"></param>
         /// <returns></returns>
-        public Generation Next(InnovationGenerator generator, InnovationGenerator genome_generator)
+        public Generation Next(InnovationGenerator generator, InnovationGenerator genomeGenerator)
         {
             Generation next = new Generation(Number + 1);
             int genomeId = 0;
+            int oldSpecieCount = 0;
+            int ReproductionsPerGenome = 2;
 
             foreach (Species oldSpecies in Species)
             {
@@ -79,37 +71,31 @@ namespace SuperIntelligence.NEAT
                 Species newSpecies = new Species(Choose(oldSpecies.Members.ToArray()));
                 next.Species.Add(newSpecies);
 
+                oldSpecieCount = oldSpecies.Members.Count;
+
+                // removing any genome that has a bad performance
+                oldSpecies.Members.RemoveAll(item => item.Fitness <= 0);
+
                 var sortedMembers = oldSpecies.Members
                     .OrderByDescending(m => AdjustedFitness(m, m.Fitness));
 
                 Genome top = sortedMembers.First();
 
-                if (oldSpecies.Members.Count > 5)
-                    next.AddGenome(top);
+                //if (oldSpecies.Members.Count > 5)
+                next.AddGenome(top);
 
-                // updating the number of reproductions needed, excluding the top genome
-                ReproductionsLeft = oldSpecies.Members.Count / ReproductionsPerGenome;
+                // applying Luhn's cut to the genomes
+                List<Genome> toReproduce = LuhnCut(sortedMembers, oldSpecieCount / ReproductionsPerGenome);
 
-                // Removing any genome that has a bad performance
-                int removedGenomes = oldSpecies.Members.RemoveAll(item => item.Fitness <= 0);
-
-                // reproducing the top genome with others
-                // we need to begin at 1 because the first member is always the top one
-                for (int i = 1; i < ReproductionsLeft + 1; i++)
+                foreach (Genome g in toReproduce)
                 {
-                    for (int j = 0; j < ReproductionsPerGenome ; j++)
+                    for (int i = 0; i < ReproductionsPerGenome; i++)
                     {
-                        Genome child = Genome.CrossOver(top, sortedMembers.ElementAt(i));
+                        Genome child = Genome.CrossOver(top, g);
                         child.Mutate(generator);
-                        child.Id = genome_generator.Innovate();
+                        child.Id = genomeGenerator.Innovate();
                         next.AddGenome(child);
                     }
-                }
-
-                Console.WriteLine("next generation genomes:\n");
-                foreach (Genome g in next.Species[0].Members)
-                {
-                    Console.WriteLine("#{0}", g.Id);
                 }
             }
 
@@ -121,7 +107,7 @@ namespace SuperIntelligence.NEAT
                     Species other = Choose(next.Species.ToArray());
                     Genome cross = Genome.CrossOver(next.Species[i].Members.OrderByDescending(m => m.Fitness).First(),
                         other.Members.OrderByDescending(m => m.Fitness).First());
-                    cross.Id = genomeId++;
+                    cross.Id = genomeId++; // Remove genomeId++ since it isn't the innovation number
                     next.AddGenome(cross);
                 }
             }
@@ -136,5 +122,25 @@ namespace SuperIntelligence.NEAT
 
         public Species RandomSpecies() =>
             Choose(Species.ToArray());
+
+        /// <summary>
+        /// Applies Luhn's cut.
+        /// </summary>
+        /// <param name="sortedMembers"></param>
+        /// <returns></returns>
+        public List<Genome> LuhnCut(IOrderedEnumerable<Genome> sortedMembers, int toRemove)
+        {
+            List<Genome> toReproduct = sortedMembers.ToList();
+
+            for (int i = 0; i < toRemove; i += 2)
+            {
+                // removing the last element
+                toReproduct.RemoveAt(toReproduct.Count() - 1);
+                // removing the first element
+                toReproduct.RemoveAt(0);
+            }
+
+            return toReproduct;
+        }
     }
 }

@@ -74,11 +74,11 @@ namespace SuperIntelligence.Data
 
             autoGenerate = true;
 
-            this.weightMutation = 0.8M;
-            this.weightPerturbance = 0.9M;
-            this.nodeCreation = 0.3M;
-            this.connectionCreation = 0.8M;
-            this.eitherDisabled = 0.25M;
+            weightMutation = 0.8M;
+            weightPerturbance = 0.9M;
+            nodeCreation = 0.3M;
+            connectionCreation = 0.8M;
+            eitherDisabled = 0.25M;
         }
     }
 }
