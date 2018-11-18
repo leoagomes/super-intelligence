@@ -42,50 +42,26 @@ namespace SuperIntelligence
                 .Where(wall => wall.Distance > 100 && wall.Enabled != 0)
                 .OrderBy(wall => wall.Distance);
 
+            int lastPlayerSlot = Game.GetCurrentPlayerSlot();
             int slotCount = Game.SlotCount;
+
             for (int i = 0; i < slotCount; i++)
             {
-                int index = 2 * i;
-
                 // add slot distance to input
                 double distance = 4.0;
                 foreach (Wall wall in closer)
                 {
-                    if (wall.Slot == i)
+                    if (wall.Slot == (lastPlayerSlot + i) % slotCount)
                     {
                         distance = (wall.Distance - 150) / 1000f;
                         break;
                     }
                 }
-                input[index] = distance;
-
-                double slotAngle = (i * (360.0 / slotCount)) + (180.0 / slotCount);
-                double playerAngle = Game.PlayerAngle;
-                double playerSlotAngle = playerAngle - slotAngle;
-
-                if (playerSlotAngle < -180.0)
-                    playerSlotAngle += 360.0;
-                if (playerSlotAngle > 180.0)
-                    playerSlotAngle -= 360.0;
-
-                double playerSlotNormalizedAngle = playerSlotAngle / 180.0;
-                double playerSlotSignedNormalizedAngle = (playerAngle < slotAngle) ?
-                    -playerSlotNormalizedAngle : playerSlotNormalizedAngle;
-
-                input[index + 1] = playerSlotNormalizedAngle;
+                input[(lastPlayerSlot + i) % slotCount] = distance;
             }
 
-            // in case slotCount was lesser than 6, we copy the first values for the last
-            // slots, making it "cyclical"
-            for (int i = slotCount * 2; i < 12; i++)
-                input[i] = input[i - (slotCount * 2)];
-
-
-            //double playerAngleRad = ((Math.PI / 180) * Game.PlayerAngle);
-            //input[NetworkInputs - 2] = playerAngleRad;
-
             // add the final bias parameter
-            input[NetworkInputs - 1] = 1;
+            input[(lastPlayerSlot + NetworkInputs - 1) % slotCount] = 1;
         }
 
         private int FarthestWallSlot(List<double> input)
@@ -95,7 +71,7 @@ namespace SuperIntelligence
             
             for (int i = 1; i < Game.SlotCount; i++)
             {
-                if (input[i * 2] > farthestDistance)
+                if (input[i] > farthestDistance)
                     farthestSlot = i;
             }
 
@@ -174,10 +150,10 @@ namespace SuperIntelligence
                 if (playerSlot != lastPlayerSlot)
                 {
                     // and the current slot's wall is farther than the last's, git yet more points
-                    if (input[lastPlayerSlot * 2] < input[playerSlot * 2])
+                    if (input[lastPlayerSlot] < input[playerSlot])
                         fitness += 10;
                     // if the current slot's wall is closer than the last's, remove some points
-                    else if (input[lastPlayerSlot] > input[playerSlot * 2])
+                    else if (input[lastPlayerSlot] > input[playerSlot])
                         fitness -= 12;
                 }
                 lastPlayerSlot = playerSlot;
@@ -186,7 +162,7 @@ namespace SuperIntelligence
                 bool hasCloseWall = false;
                 for (int i = 0; i < slotCount; i++)
                 {
-                    if (input[i * 2] <= 0.0)
+                    if (input[i] <= 0.0)
                     {
                         hasCloseWall = true;
                         break;

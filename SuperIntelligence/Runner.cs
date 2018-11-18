@@ -68,7 +68,7 @@ namespace SuperIntelligence
 
         #region Static Methods
         public Generation MakeFirstGeneration(InnovationGenerator generator, InnovationGenerator genomeGenerator,
-            int initialPopulationSize)
+            int initialPopulationSize, int selectionAlgorithm, int reproductionsPerGenome, int nBest)
         {
             // check if there is a Lua implementation of this
             LuaFunction func = LuaState["MakeFirstGeneration"] as LuaFunction;
@@ -84,7 +84,7 @@ namespace SuperIntelligence
                 }
             }
 
-            Generation generation = new Generation(0);
+            Generation generation = new Generation(0, selectionAlgorithm, reproductionsPerGenome, nBest);
             Genome genome = new Genome(0);
 
             int inputs = Data.Constants.NetworkInputs;
@@ -149,7 +149,7 @@ namespace SuperIntelligence
                 manager.Kill();
         }
 
-        public void DoRun(GameModes mode, Generation firstGeneration)
+        public void DoRun(GameModes mode, Generation firstGeneration, int selectionAlgorithm, int reproductionsPerGenome, int nBest)
         {
             string hexagonDirectory = Path.GetDirectoryName(GameExecutablePath);
             string hexagonFile = Path.GetFileName(GameExecutablePath);
@@ -270,7 +270,7 @@ namespace SuperIntelligence
                 }
 
                 if (func == null || error)
-                    generation = generation.Next(generator, genomeGenerator);
+                    generation = generation.Next(generator, genomeGenerator, selectionAlgorithm, reproductionsPerGenome, nBest);
 
                 OnNextGeneration(generation);
 

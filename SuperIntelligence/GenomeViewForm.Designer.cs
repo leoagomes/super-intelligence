@@ -78,6 +78,15 @@
             this.genomeTabFitnessLabel = new System.Windows.Forms.Label();
             this.genomeNameLabel = new System.Windows.Forms.Label();
             this.runSettingsTabPage = new System.Windows.Forms.TabPage();
+            this.algorithmsGroupBox = new System.Windows.Forms.GroupBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.nBestUpDown = new System.Windows.Forms.NumericUpDown();
+            this.reproductionsPerGenomeUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label11 = new System.Windows.Forms.Label();
+            this.reproductionSelectionComboBox = new System.Windows.Forms.ComboBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.resetButtonRunSettings = new System.Windows.Forms.Button();
             this.runVariablesGroupBox = new System.Windows.Forms.GroupBox();
             this.eitherDisabledUpDown = new System.Windows.Forms.NumericUpDown();
             this.connectionCreationUpDown = new System.Windows.Forms.NumericUpDown();
@@ -89,8 +98,10 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.luaScriptTextBox = new System.Windows.Forms.TextBox();
             this.saveButtonRunSettings = new System.Windows.Forms.Button();
             this.gameInstancesUpDown = new System.Windows.Forms.NumericUpDown();
+            this.luaScriptBrowseButton = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -104,11 +115,7 @@
             this.runBackgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.runTimer = new System.Windows.Forms.Timer(this.components);
             this.openFirstGenFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.label10 = new System.Windows.Forms.Label();
-            this.luaScriptBrowseButton = new System.Windows.Forms.Button();
-            this.luaScriptTextBox = new System.Windows.Forms.TextBox();
             this.openLuaScriptDialog = new System.Windows.Forms.OpenFileDialog();
-            this.resetButtonRunSettings = new System.Windows.Forms.Button();
             this.mainMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -129,6 +136,9 @@
             this.panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.genomePictureBox)).BeginInit();
             this.runSettingsTabPage.SuspendLayout();
+            this.algorithmsGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nBestUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.reproductionsPerGenomeUpDown)).BeginInit();
             this.runVariablesGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.eitherDisabledUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.connectionCreationUpDown)).BeginInit();
@@ -616,6 +626,7 @@
             // 
             // runSettingsTabPage
             // 
+            this.runSettingsTabPage.Controls.Add(this.algorithmsGroupBox);
             this.runSettingsTabPage.Controls.Add(this.label10);
             this.runSettingsTabPage.Controls.Add(this.resetButtonRunSettings);
             this.runSettingsTabPage.Controls.Add(this.runVariablesGroupBox);
@@ -634,6 +645,90 @@
             this.runSettingsTabPage.TabIndex = 6;
             this.runSettingsTabPage.Text = "Run Settings";
             this.runSettingsTabPage.UseVisualStyleBackColor = true;
+            // 
+            // algorithmsGroupBox
+            // 
+            this.algorithmsGroupBox.Controls.Add(this.label13);
+            this.algorithmsGroupBox.Controls.Add(this.label12);
+            this.algorithmsGroupBox.Controls.Add(this.nBestUpDown);
+            this.algorithmsGroupBox.Controls.Add(this.reproductionsPerGenomeUpDown);
+            this.algorithmsGroupBox.Controls.Add(this.label11);
+            this.algorithmsGroupBox.Controls.Add(this.reproductionSelectionComboBox);
+            this.algorithmsGroupBox.Location = new System.Drawing.Point(242, 188);
+            this.algorithmsGroupBox.Name = "algorithmsGroupBox";
+            this.algorithmsGroupBox.Size = new System.Drawing.Size(305, 99);
+            this.algorithmsGroupBox.TabIndex = 10;
+            this.algorithmsGroupBox.TabStop = false;
+            this.algorithmsGroupBox.Text = "Algorithms";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(6, 73);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(41, 13);
+            this.label13.TabIndex = 5;
+            this.label13.Text = "N best:";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(6, 47);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(138, 13);
+            this.label12.TabIndex = 4;
+            this.label12.Text = "Reproductions per genome:";
+            // 
+            // nBestUpDown
+            // 
+            this.nBestUpDown.Location = new System.Drawing.Point(179, 71);
+            this.nBestUpDown.Name = "nBestUpDown";
+            this.nBestUpDown.Size = new System.Drawing.Size(120, 20);
+            this.nBestUpDown.TabIndex = 3;
+            // 
+            // reproductionsPerGenomeUpDown
+            // 
+            this.reproductionsPerGenomeUpDown.Location = new System.Drawing.Point(179, 45);
+            this.reproductionsPerGenomeUpDown.Name = "reproductionsPerGenomeUpDown";
+            this.reproductionsPerGenomeUpDown.Size = new System.Drawing.Size(120, 20);
+            this.reproductionsPerGenomeUpDown.TabIndex = 2;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 21);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(119, 13);
+            this.label11.TabIndex = 1;
+            this.label11.Text = "Reproduction selection:";
+            // 
+            // reproductionSelectionComboBox
+            // 
+            this.reproductionSelectionComboBox.FormattingEnabled = true;
+            this.reproductionSelectionComboBox.Location = new System.Drawing.Point(178, 18);
+            this.reproductionSelectionComboBox.Name = "reproductionSelectionComboBox";
+            this.reproductionSelectionComboBox.Size = new System.Drawing.Size(121, 21);
+            this.reproductionSelectionComboBox.TabIndex = 0;
+            this.reproductionSelectionComboBox.SelectedIndexChanged += new System.EventHandler(this.reproductionSelectionComboBox_SelectedIndexChanged);
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(6, 61);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(56, 13);
+            this.label10.TabIndex = 9;
+            this.label10.Text = "Lua script:";
+            // 
+            // resetButtonRunSettings
+            // 
+            this.resetButtonRunSettings.Location = new System.Drawing.Point(415, 496);
+            this.resetButtonRunSettings.Name = "resetButtonRunSettings";
+            this.resetButtonRunSettings.Size = new System.Drawing.Size(75, 23);
+            this.resetButtonRunSettings.TabIndex = 9;
+            this.resetButtonRunSettings.Text = "Reset";
+            this.resetButtonRunSettings.UseVisualStyleBackColor = true;
+            this.resetButtonRunSettings.Click += new System.EventHandler(this.resetButtonRunSettings_Click);
             // 
             // runVariablesGroupBox
             // 
@@ -799,6 +894,13 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Weight mutation:";
             // 
+            // luaScriptTextBox
+            // 
+            this.luaScriptTextBox.Location = new System.Drawing.Point(68, 58);
+            this.luaScriptTextBox.Name = "luaScriptTextBox";
+            this.luaScriptTextBox.Size = new System.Drawing.Size(198, 20);
+            this.luaScriptTextBox.TabIndex = 6;
+            // 
             // saveButtonRunSettings
             // 
             this.saveButtonRunSettings.Location = new System.Drawing.Point(496, 496);
@@ -819,6 +921,16 @@
             0,
             0,
             0});
+            // 
+            // luaScriptBrowseButton
+            // 
+            this.luaScriptBrowseButton.Location = new System.Drawing.Point(272, 56);
+            this.luaScriptBrowseButton.Name = "luaScriptBrowseButton";
+            this.luaScriptBrowseButton.Size = new System.Drawing.Size(75, 23);
+            this.luaScriptBrowseButton.TabIndex = 4;
+            this.luaScriptBrowseButton.Text = "Browse";
+            this.luaScriptBrowseButton.UseVisualStyleBackColor = true;
+            this.luaScriptBrowseButton.Click += new System.EventHandler(this.luaScriptBrowseButton_Click);
             // 
             // label5
             // 
@@ -938,44 +1050,9 @@
             // 
             this.openFirstGenFileDialog.Filter = "JSON files|*.json|All files|*.*";
             // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(6, 61);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(56, 13);
-            this.label10.TabIndex = 9;
-            this.label10.Text = "Lua script:";
-            // 
-            // luaScriptBrowseButton
-            // 
-            this.luaScriptBrowseButton.Location = new System.Drawing.Point(272, 56);
-            this.luaScriptBrowseButton.Name = "luaScriptBrowseButton";
-            this.luaScriptBrowseButton.Size = new System.Drawing.Size(75, 23);
-            this.luaScriptBrowseButton.TabIndex = 4;
-            this.luaScriptBrowseButton.Text = "Browse";
-            this.luaScriptBrowseButton.UseVisualStyleBackColor = true;
-            this.luaScriptBrowseButton.Click += new System.EventHandler(this.luaScriptBrowseButton_Click);
-            // 
-            // luaScriptTextBox
-            // 
-            this.luaScriptTextBox.Location = new System.Drawing.Point(68, 58);
-            this.luaScriptTextBox.Name = "luaScriptTextBox";
-            this.luaScriptTextBox.Size = new System.Drawing.Size(198, 20);
-            this.luaScriptTextBox.TabIndex = 6;
-            // 
             // openLuaScriptDialog
             // 
             this.openLuaScriptDialog.Filter = "Lua files|*.lua|All files|*.*";
-            // resetButtonRunSettings
-            // 
-            this.resetButtonRunSettings.Location = new System.Drawing.Point(415, 496);
-            this.resetButtonRunSettings.Name = "resetButtonRunSettings";
-            this.resetButtonRunSettings.Size = new System.Drawing.Size(75, 23);
-            this.resetButtonRunSettings.TabIndex = 9;
-            this.resetButtonRunSettings.Text = "Reset";
-            this.resetButtonRunSettings.UseVisualStyleBackColor = true;
-            this.resetButtonRunSettings.Click += new System.EventHandler(this.resetButtonRunSettings_Click);
             // 
             // GenomeViewForm
             // 
@@ -1015,6 +1092,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.genomePictureBox)).EndInit();
             this.runSettingsTabPage.ResumeLayout(false);
             this.runSettingsTabPage.PerformLayout();
+            this.algorithmsGroupBox.ResumeLayout(false);
+            this.algorithmsGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nBestUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.reproductionsPerGenomeUpDown)).EndInit();
             this.runVariablesGroupBox.ResumeLayout(false);
             this.runVariablesGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.eitherDisabledUpDown)).EndInit();
@@ -1113,5 +1194,12 @@
         private System.Windows.Forms.Button luaScriptBrowseButton;
         private System.Windows.Forms.OpenFileDialog openLuaScriptDialog;
         private System.Windows.Forms.Button resetButtonRunSettings;
+        private System.Windows.Forms.GroupBox algorithmsGroupBox;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.ComboBox reproductionSelectionComboBox;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.NumericUpDown nBestUpDown;
+        private System.Windows.Forms.NumericUpDown reproductionsPerGenomeUpDown;
     }
 }

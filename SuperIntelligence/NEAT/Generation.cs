@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using static SuperIntelligence.Data.Constants;
 using static SuperIntelligence.Random.Random;
 
 namespace SuperIntelligence.NEAT
@@ -18,10 +18,29 @@ namespace SuperIntelligence.NEAT
         /// </summary>
         public static double InterspeciesMatingChance = 0.01;
 
-        public Generation(int number)
+        /// <summary>
+        /// Number of times each of the selected genomes will be reproduced with the top genome.
+        /// </summary>
+        public int ReproductionsPerGenome = 2;
+
+        /// <summary>
+        /// Number of best genomes to select.
+        /// </summary>
+        public int NBest;
+
+        /// <summary>
+        /// The algorithm to select genomes to reproduce. See SelectionAlgorithms enum at SuperIntelligence.Data for
+        /// more information about the algorithms.
+        /// </summary>
+        public int SelectionAlgorithm;
+
+        public Generation(int number, int selectionAlgorithm, int reproductionsPerGenome, int nBest)
         {
             Number = number;
             Species = new List<Species>();
+            SelectionAlgorithm = selectionAlgorithm;
+            ReproductionsPerGenome = reproductionsPerGenome;
+            NBest = nBest;
         }
 
         /// <summary>
@@ -57,12 +76,13 @@ namespace SuperIntelligence.NEAT
         /// </summary>
         /// <param name="generator"></param>
         /// <returns></returns>
-        public Generation Next(InnovationGenerator generator, InnovationGenerator genomeGenerator)
+        public Generation Next(InnovationGenerator generator, InnovationGenerator genomeGenerator, int selectionAlgorithm,
+                               int reproductionsPerGenome, int nBest)
         {
-            Generation next = new Generation(Number + 1);
+            Generation next = new Generation(Number + 1, selectionAlgorithm, reproductionsPerGenome, nBest);
             int genomeId = 0;
             int oldSpecieCount = 0;
-            int ReproductionsPerGenome = 2;
+            List<Genome> toReproduce = new List<Genome>();
 
             foreach (Species oldSpecies in Species)
             {
@@ -85,7 +105,31 @@ namespace SuperIntelligence.NEAT
                 next.AddGenome(top);
 
                 // applying Luhn's cut to the genomes
-                List<Genome> toReproduce = LuhnCut(sortedMembers, oldSpecieCount / ReproductionsPerGenome);
+                switch (selectionAlgorithm)
+                {
+                    case (int)SelectionAlgorithms.Luhn:
+                        toReproduce = LuhnCut(sortedMembers, oldSpecieCount / ReproductionsPerGenome);
+                        break;
+
+                    // no need to cut sortedMembers, use all
+                    case (int)SelectionAlgorithms.AllWithBest:
+                        toReproduce = sortedMembers.ToList();
+                        ReproductionsPerGenome = 1;
+                        break;
+                    
+                    case (int)SelectionAlgorithms.NWithBest:
+                        toReproduce = SelectNBestGenomes(sortedMembers, nBest);
+                        ReproductionsPerGenome = oldSpecieCount / nBest;
+                        Console.WriteLine("nBest: {0}", nBest);
+                        break;
+
+                    // the default genome selection is Luhn
+                    default:
+                        toReproduce = LuhnCut(sortedMembers, oldSpecieCount / ReproductionsPerGenome);
+                        break;
+                }
+
+                Console.WriteLine("ReproductionsPerGenome: {0}", ReproductionsPerGenome);
 
                 foreach (Genome g in toReproduce)
                 {
@@ -123,24 +167,59 @@ namespace SuperIntelligence.NEAT
         public Species RandomSpecies() =>
             Choose(Species.ToArray());
 
+        #region Reproduction Genome Selection Algorithms
         /// <summary>
         /// Applies Luhn's cut.
         /// </summary>
-        /// <param name="sortedMembers"></param>
+        /// <param name="sortedMembers">Genomes ordered by fitness</param>
+        /// <param name="toRemove">Number of genomes to be removed</param>
         /// <returns></returns>
         public List<Genome> LuhnCut(IOrderedEnumerable<Genome> sortedMembers, int toRemove)
         {
             List<Genome> toReproduct = sortedMembers.ToList();
 
-            for (int i = 0; i < toRemove; i += 2)
+            // we need to differentiate the remotion whether 'toRemove' is odd or not
+            // if even
+            if (toRemove % 2 == 0)
             {
-                // removing the last element
+                for (int i = 0; i < toRemove; i += 2)
+                {
+                    // removing the last element
+                    toReproduct.RemoveAt(toReproduct.Count() - 1);
+                    // removing the first element
+                    toReproduct.RemoveAt(0);
+                }
+            }
+            // if odd
+            else
+            {
+                for (int i = 0; i < toRemove - 1; i += 2)
+                {
+                    // removing the last element
+                    toReproduct.RemoveAt(toReproduct.Count() - 1);
+                    // removing the first element
+                    toReproduct.RemoveAt(0);
+                }
+                // removing the last one
                 toReproduct.RemoveAt(toReproduct.Count() - 1);
-                // removing the first element
-                toReproduct.RemoveAt(0);
             }
 
             return toReproduct;
         }
+
+        /// <summary>
+        /// Select the 'n' best genomes from the previous generation.
+        /// </summary>
+        /// <param name="sortedMembers"></param>
+        /// <param name="n">Number of genomes to be selected</param>
+        /// <returns></returns>
+        public List<Genome> SelectNBestGenomes (IOrderedEnumerable<Genome> sortedMembers, int n)
+        {
+            List<Genome> toReproduct = sortedMembers.ToList();
+            toReproduct.RemoveRange(n, toReproduct.Count() - n);
+
+            return toReproduct;
+        }
+        #endregion
     }
 }

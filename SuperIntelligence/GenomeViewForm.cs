@@ -24,6 +24,7 @@ using SuperIntelligence.NEAT;
 using SuperIntelligence.Other;
 using SuperIntelligence.Data;
 using SuperIntelligence.Game;
+using static SuperIntelligence.Data.Constants;
 
 namespace SuperIntelligence
 {
@@ -49,7 +50,6 @@ namespace SuperIntelligence
         {
             InitializeComponent();
             settings = new RunSettingsController();
-            SetUIRunSettings();
         }
 
         #region Helper Methods
@@ -287,7 +287,11 @@ namespace SuperIntelligence
             Enum.GetNames(typeof(Game.GameModes))
                 .ToList()
                 .ForEach(name => gameModeComboBox.Items.Add(name));
-            gameModeComboBox.SelectedIndex = (int)Game.GameModes.Hexagonest;
+
+            // populate selection algorithms
+            Enum.GetNames(typeof(SelectionAlgorithms))
+                .ToList()
+                .ForEach(name => reproductionSelectionComboBox.Items.Add(name));
 
             // bootstrap run fitness chart
             runFitnessChart.Series = new SeriesCollection
@@ -324,11 +328,7 @@ namespace SuperIntelligence
                 }
             };
 
-            weightMutationUpDown.Value = (decimal)Genome.WeightMutationProbability;
-            weightPerturbanceUpDown.Value = (decimal)Genome.WeightPerturbanceProbability;
-            nodeCreationUpDown.Value = (decimal)Genome.NodeCreationProbability;
-            connectionCreationUpDown.Value = (decimal)Genome.ConnectionCreationProbability;
-            eitherDisabledUpDown.Value = (decimal)Genome.EitherDisabledChance;
+            SetUIRunSettings();
         }
 
         /// <summary>
@@ -382,19 +382,26 @@ namespace SuperIntelligence
         /// </summary>
         private void SetUIRunSettings()
         {
+            gameModeComboBox.SelectedIndex = settings.s.gameMode;
             gameInstancesUpDown.Value = settings.s.gameInstances;
+            luaScriptTextBox.Text = settings.s.luaScriptFile;
 
-            randomFirstGenCheckBox.Checked = settings.s.autoGenerate;
-            populationSizeUpDown.Value = settings.s.initPopSize;
-            generationFileTextBox.Text = settings.s.generationFile;
-
+            // Variables
             weightMutationUpDown.Value = settings.s.weightMutation;
             weightPerturbanceUpDown.Value = settings.s.weightPerturbance;
             nodeCreationUpDown.Value = settings.s.nodeCreation;
             connectionCreationUpDown.Value = settings.s.connectionCreation;
             eitherDisabledUpDown.Value = settings.s.eitherDisabled;
 
-            luaScriptTextBox.Text = settings.s.luaScriptFile;
+            // First generation
+            randomFirstGenCheckBox.Checked = settings.s.autoGenerate;
+            populationSizeUpDown.Value = settings.s.initPopSize;
+            generationFileTextBox.Text = settings.s.generationFile;
+
+            // Algorithms
+            reproductionSelectionComboBox.SelectedIndex = settings.s.selectionAlgorithm;
+            reproductionsPerGenomeUpDown.Value = settings.s.reproductionsPerGenome;
+            nBestUpDown.Value = settings.s.nBest;
         }
 
         /// <summary>
@@ -404,18 +411,24 @@ namespace SuperIntelligence
         {
             settings.s.gameMode = gameModeComboBox.SelectedIndex;
             settings.s.gameInstances = int.Parse(gameInstancesUpDown.Value.ToString());
+            settings.s.luaScriptFile = luaScriptTextBox.Text;
 
+            // Variables
+            settings.s.weightMutation = weightMutationUpDown.Value;
+            settings.s.weightPerturbance = weightPerturbanceUpDown.Value;
+            settings.s.nodeCreation = nodeCreationUpDown.Value;
+            settings.s.connectionCreation = connectionCreationUpDown.Value;
+            settings.s.eitherDisabled = eitherDisabledUpDown.Value;
+
+            // First generation
             settings.s.autoGenerate = randomFirstGenCheckBox.Checked;
             settings.s.initPopSize = int.Parse(populationSizeUpDown.Value.ToString());
             settings.s.generationFile = generationFileTextBox.Text;
 
-            settings.s.weightMutation = decimal.Parse(weightMutationUpDown.Value.ToString());
-            settings.s.weightPerturbance = decimal.Parse(weightPerturbanceUpDown.Value.ToString());
-            settings.s.nodeCreation = decimal.Parse(nodeCreationUpDown.Value.ToString());
-            settings.s.connectionCreation = decimal.Parse(connectionCreationUpDown.Value.ToString());
-            settings.s.eitherDisabled = decimal.Parse(eitherDisabledUpDown.Value.ToString());
-
-            settings.s.luaScriptFile = luaScriptTextBox.Text;
+            // Algorithms
+            settings.s.selectionAlgorithm = reproductionSelectionComboBox.SelectedIndex;
+            settings.s.reproductionsPerGenome = reproductionsPerGenomeUpDown.Value;
+            settings.s.nBest = nBestUpDown.Value;
         }
         #endregion
 
@@ -852,6 +865,19 @@ namespace SuperIntelligence
             if (openLuaScriptDialog.ShowDialog() == DialogResult.OK)
                 luaScriptTextBox.Text = openLuaScriptDialog.FileName;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void reproductionSelectionComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            nBestUpDown.Enabled =
+                reproductionSelectionComboBox.SelectedIndex == (int)SelectionAlgorithms.NWithBest ? true : false;
+            reproductionsPerGenomeUpDown.Enabled =
+                reproductionSelectionComboBox.SelectedIndex == (int)SelectionAlgorithms.NWithBest ? false : true;
+        }
         #endregion
 
         #endregion
@@ -875,7 +901,8 @@ namespace SuperIntelligence
             }
             else
             {
-                firstGen = runner.MakeFirstGeneration(runner.InnovationGenerator, runner.GenomeInnovationGenerator, (int)populationSizeUpDown.Value);
+                firstGen = runner.MakeFirstGeneration(runner.InnovationGenerator, runner.GenomeInnovationGenerator, (int)populationSizeUpDown.Value, settings.s.selectionAlgorithm,
+                                                      (int)settings.s.reproductionsPerGenome, (int)settings.s.nBest);
             }
 
             Runner_OnNextGeneration(firstGen);
@@ -886,53 +913,8 @@ namespace SuperIntelligence
             runner.OnIndividualTested += Runner_OnIndividualTested;
             runner.OnLoopFinish += Runner_OnLoopFinish;
 
-            runner.DoRun(gameMode, firstGen);
-        }
-
-        /// <summary>
-        /// Convert a GameModes number to a KeyValuePair. It is used to change the game mode 'Run Settings' tab.
-        /// </summary>
-        /// <param name="gameMode"></param>
-        /// <returns></returns>
-        public KeyValuePair<int, string> ConvertGameModeToKeyValuePair(int gameMode)
-        {
-            int key = (int)GameModes.Hexagon;
-            string value = "Hexagon";
-
-            switch (gameMode)
-            {
-                case (int)GameModes.Hexagon:
-                    key = (int)GameModes.Hexagon;
-                    value = "Hexagon";
-                    break;
-
-                case (int)GameModes.Hexagoner:
-                    key = (int)GameModes.Hexagoner;
-                    value = "Hexagoner";
-                    break;
-
-                case (int)GameModes.HexagonerHyper:
-                    key = (int)GameModes.HexagonerHyper;
-                    value = "HexagonerHyper";
-                    break;
-
-                case (int)GameModes.Hexagonest:
-                    key = (int)GameModes.Hexagonest;
-                    value = "Hexagonest";
-                    break;
-
-                case (int)GameModes.HexagonestHyper:
-                    key = (int)GameModes.HexagonestHyper;
-                    value = "HexagonestHyper";
-                    break;
-
-                case (int)GameModes.HexagonHyper:
-                    key = (int)GameModes.HexagonHyper;
-                    value = "HexagonHyper";
-                    break;
-            }
-
-            return new KeyValuePair<int, string>(key, value);
+            runner.DoRun(gameMode, firstGen, settings.s.selectionAlgorithm, (int)settings.s.reproductionsPerGenome,
+                         (int)settings.s.nBest);
         }
         #endregion
     }

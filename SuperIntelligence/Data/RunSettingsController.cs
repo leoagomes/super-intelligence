@@ -19,7 +19,7 @@ namespace SuperIntelligence.Data
         public RunSettingsController()
         {
             settingsFile = Path.Combine(Directory.GetCurrentDirectory(), "runsettings.json");
-            this.s = new RunSettings();
+            s = new RunSettings();
 
             if (File.Exists(settingsFile))
             {
@@ -37,7 +37,7 @@ namespace SuperIntelligence.Data
         public void LoadSettings()
         {
             string content = File.ReadAllText(settingsFile);
-            this.s = JsonConvert.DeserializeObject<RunSettings>(content);
+            s = JsonConvert.DeserializeObject<RunSettings>(content);
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace SuperIntelligence.Data
             using (StreamWriter file = File.CreateText(settingsFile))
             {
                 JsonSerializer ser = new JsonSerializer();
-                ser.Serialize(file, this.s);
+                ser.Serialize(file, s);
             }
         }
         #endregion
