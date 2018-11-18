@@ -873,10 +873,23 @@ namespace SuperIntelligence
         /// <param name="e"></param>
         private void reproductionSelectionComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            nBestUpDown.Enabled =
-                reproductionSelectionComboBox.SelectedIndex == (int)SelectionAlgorithms.NWithBest ? true : false;
-            reproductionsPerGenomeUpDown.Enabled =
-                reproductionSelectionComboBox.SelectedIndex == (int)SelectionAlgorithms.NWithBest ? false : true;
+            switch (reproductionSelectionComboBox.SelectedIndex)
+            {
+                case (int)SelectionAlgorithms.Luhn:
+                    nBestUpDown.Enabled = true;
+                    reproductionsPerGenomeUpDown.Enabled = true;
+                    break;
+
+                case (int)SelectionAlgorithms.NWithBest:
+                    nBestUpDown.Enabled = true;
+                    reproductionsPerGenomeUpDown.Enabled = false;
+                    break;
+
+                case (int)SelectionAlgorithms.AllWithBest:
+                    nBestUpDown.Enabled = false;
+                    reproductionsPerGenomeUpDown.Enabled = false;
+                    break;
+            }
         }
         #endregion
 
