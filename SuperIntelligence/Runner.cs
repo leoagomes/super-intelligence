@@ -206,14 +206,12 @@ namespace SuperIntelligence
 
                     // there are still untested individuals in the generation and there
                     // is a manager available, so start a thread with a runner on this manager
-                    GameManager manager;
-                    AvailableGameManagers.TryDequeue(out manager);
+                    AvailableGameManagers.TryDequeue(out GameManager manager);
 
                     if (manager == null)
                         continue; // not sure what happened, try again
 
-                    Individual individual;
-                    UntestedIndividuals.TryDequeue(out individual);
+                    UntestedIndividuals.TryDequeue(out Individual individual);
 
                     if (individual == null)
                     {
@@ -221,6 +219,8 @@ namespace SuperIntelligence
                         AvailableGameManagers.Enqueue(manager);
                         continue;
                     }
+
+                    manager.Game.SRand((uint)individual.Generation);
 
                     AIRunner runner = new AIRunner(manager, individual, mode);
                     ThreadStart start = new ThreadStart(() =>

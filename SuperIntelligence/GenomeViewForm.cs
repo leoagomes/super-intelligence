@@ -388,10 +388,15 @@ namespace SuperIntelligence
 
             // Variables
             weightMutationUpDown.Value = settings.s.weightMutation;
+            Genome.WeightMutationProbability = (double)settings.s.weightMutation;
             weightPerturbanceUpDown.Value = settings.s.weightPerturbance;
+            Genome.WeightPerturbanceProbability = (double)settings.s.weightPerturbance;
             nodeCreationUpDown.Value = settings.s.nodeCreation;
+            Genome.NodeCreationProbability = (double)settings.s.nodeCreation;
             connectionCreationUpDown.Value = settings.s.connectionCreation;
+            Genome.ConnectionCreationProbability = (double)settings.s.connectionCreation;
             eitherDisabledUpDown.Value = settings.s.eitherDisabled;
+            Genome.EitherDisabledChance = (double)settings.s.eitherDisabled;
 
             // First generation
             randomFirstGenCheckBox.Checked = settings.s.autoGenerate;

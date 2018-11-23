@@ -100,6 +100,12 @@ namespace SuperIntelligence.NEAT
                 destination = Choose(Nodes.Values.ToArray());
             } while (destination.Mark <= source.Mark);
 
+            if (Connections.Values.Any((conn) =>
+                conn.InputNode == source.Id && conn.OutputNode == destination.Id))
+            {
+                return;
+            }
+
             // now we can create the new connection
             double weight = GenerateWeight(); // TODO: recheck this
             int innovation = generator.Innovate();
@@ -135,6 +141,9 @@ namespace SuperIntelligence.NEAT
 
         public void MutateWeights()
         {
+            if (WeightMutationProbability == 0)
+                return;
+
             foreach (Connection conn in Connections.Values)
             {
                 if (!InChance(WeightMutationProbability))
@@ -190,6 +199,7 @@ namespace SuperIntelligence.NEAT
                 }
                 else
                 {
+                    eitherDisabled = false;
                     newConn = conn.Copy();
                 }
 

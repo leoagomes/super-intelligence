@@ -62,7 +62,7 @@ namespace SuperIntelligence.NEAT.Computation
 
             midComputation = false;
 
-            return val;
+            return value;
         }
 
         public void MarkRecalculate() =>

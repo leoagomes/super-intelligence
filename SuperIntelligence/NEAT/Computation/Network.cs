@@ -20,7 +20,7 @@ namespace SuperIntelligence.NEAT
             {
                 if (node.Type != NodeType.Input)
                 {
-                    CNode cNode = new CNode(node.Id, x => (1 / (1 + Math.Exp(-4.9 * x))));
+                    CNode cNode = new CNode(node.Id, x => (1 / (1 + Math.Exp(-x))));
                     Nodes[node.Id] = cNode;
 
                     if (node.Type == NodeType.Output)

@@ -722,6 +722,7 @@
             // 
             // resetButtonRunSettings
             // 
+            this.resetButtonRunSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.resetButtonRunSettings.Location = new System.Drawing.Point(415, 496);
             this.resetButtonRunSettings.Name = "resetButtonRunSettings";
             this.resetButtonRunSettings.Size = new System.Drawing.Size(75, 23);
@@ -903,6 +904,7 @@
             // 
             // saveButtonRunSettings
             // 
+            this.saveButtonRunSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.saveButtonRunSettings.Location = new System.Drawing.Point(496, 496);
             this.saveButtonRunSettings.Name = "saveButtonRunSettings";
             this.saveButtonRunSettings.Size = new System.Drawing.Size(75, 23);

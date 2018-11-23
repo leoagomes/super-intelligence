@@ -31,13 +31,13 @@ namespace SuperIntelligence.Game
 
         public int Slot;
         public int Distance;
-        public int Enabled;
+        public int Length;
 
-        public Wall(int slot, int distance, int enabled)
+        public Wall(int slot, int distance, int length)
         {
             Slot = slot;
             Distance = distance;
-            Enabled = enabled;
+            Length = length;
         }
     }
 
@@ -78,6 +78,10 @@ namespace SuperIntelligence.Game
             get
             {
                 return BasePointer.Read<int>((int)Offsets.PlayerAngle);
+            }
+            set
+            {
+                BasePointer.Write((int)Offsets.PlayerAngle, value);
             }
         }
 
@@ -210,6 +214,11 @@ namespace SuperIntelligence.Game
             Process.Kill();
 
         public int GetCurrentPlayerSlot() =>
-            (int)((PlayerAngle * SlotCount) / 360);
+            ((PlayerAngle * SlotCount) / 360);
+
+        public void SRand(uint seed)
+        {
+            Memory["msvcr100"]["srand"].Execute(Binarysharp.MemoryManagement.Assembly.CallingConvention.CallingConventions.Cdecl, seed);
+        }
     }
 }

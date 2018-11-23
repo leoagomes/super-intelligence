@@ -14,7 +14,7 @@ namespace SuperIntelligence
     class AIRunner
     {
         public static slf4net.ILogger logger = slf4net.LoggerFactory.GetLogger(typeof(AIRunner));
-        public static double ButtonDownThreshold = 0.7;
+        public static double ButtonDownThreshold = 0.5;
         public static int DefaultTicksPerSecond = 50;
 
         public GameManager Manager;
@@ -39,29 +39,33 @@ namespace SuperIntelligence
             Wall[] walls = Game.Walls;
 
             var closer = walls
-                .Where(wall => wall.Distance > 100 && wall.Enabled != 0)
+                .Where(wall => wall.Length > 0 && wall.Length < 0xFFFFF0)
                 .OrderBy(wall => wall.Distance);
 
             int lastPlayerSlot = Game.GetCurrentPlayerSlot();
             int slotCount = Game.SlotCount;
 
-            for (int i = 0; i < slotCount; i++)
+            for (int i = 0; i < 6; i++)
             {
-                // add slot distance to input
+                int currentWallSlot = (lastPlayerSlot + i) % slotCount;
+
                 double distance = 4.0;
+                double length = 4.0;
                 foreach (Wall wall in closer)
                 {
-                    if (wall.Slot == (lastPlayerSlot + i) % slotCount)
+                    if (wall.Slot == currentWallSlot)
                     {
-                        distance = (wall.Distance - 150) / 1000f;
+                        distance = wall.Distance / 1000f;
+                        length = wall.Length / 1000f;
                         break;
                     }
                 }
-                input[(lastPlayerSlot + i) % slotCount] = distance;
+
+                input[i*2] = distance;
+                input[i*2 + 1] = length;
             }
 
-            // add the final bias parameter
-            input[(lastPlayerSlot + NetworkInputs - 1) % slotCount] = 1;
+            input[NetworkInputs - 1] = 1f;
         }
 
         private int FarthestWallSlot(List<double> input)
@@ -80,17 +84,17 @@ namespace SuperIntelligence
 
         public void DoSafeRun()
         {
-            try
-            {
+            //try
+            //{
                 DoGameRun();
-            }
-            catch (Exception e)
-            {
-                logger.Error("Exception caught trying to do an AIRunner Run.\nIndividual was: " + Individual);
-                logger.Error("Exception caught was: " + e);
-                logger.Warn("Setting failed individual fitness to minimum.");
-                Individual.Fitness = int.MinValue;
-            }
+            //}
+            //catch (Exception e)
+            //{
+            //    logger.Error("Exception caught trying to do an AIRunner Run.\nIndividual was: " + Individual);
+            //    logger.Error("Exception caught was: " + e);
+            //    logger.Warn("Setting failed individual fitness to minimum.");
+            //    Individual.Fitness = int.MinValue;
+            //}
         }
 
         public void DoGameRun()
@@ -113,6 +117,8 @@ namespace SuperIntelligence
             int lastPlayerSlot = Game.GetCurrentPlayerSlot();
             int fitness = 0;
 
+            Game.PlayerAngle = 0;
+
             CurrentTick = 0;
             while (!Game.GameEnded && !Game.GameEnded2)
             {
@@ -127,13 +133,14 @@ namespace SuperIntelligence
                     throw new Exception("Unexpected amount of outputs: " + output.Count);
 
                 // check if mouse left/right should be pressed
-                bool mouseLeftDown = output[0] > ButtonDownThreshold;
-                bool mouseRightDown = output[1] > ButtonDownThreshold;
+                bool mouseLeftDown = output[0] < ButtonDownThreshold;
+                bool mouseRightDown = output[0] > ButtonDownThreshold;
+                bool mouseDown = output[1] > ButtonDownThreshold;
 
                 // write it out to game memory
                 Game.MouseLeft = mouseLeftDown;
                 Game.MouseRight = mouseRightDown;
-                Game.MouseDown = mouseRightDown || mouseLeftDown;
+                Game.MouseDown = mouseDown;
 
                 // do fitness calculations
                 int slotCount = Game.SlotCount;
@@ -185,16 +192,17 @@ namespace SuperIntelligence
 
             // we lost, so let's update the game state
             Manager.UpdateState(GameStates.GameOver);
-            Thread.Sleep(2000);
 
             // remove input set before
             Game.MouseLeft = false;
             Game.MouseRight = false;
             Game.MouseDown = false;
 
+            Thread.Sleep(2000);
+
             // save the individual's fitness
             //Individual.Fitness = fitness + Game.GameTime;
-            Individual.Fitness = (Game.GameTime + fitness) / 60;
+            Individual.Fitness = (Game.GameTime) / 60;
         }
     }
 }

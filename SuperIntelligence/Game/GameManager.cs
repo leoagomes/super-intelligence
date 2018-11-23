@@ -69,16 +69,9 @@ namespace SuperIntelligence.Game
                     if (CurrentMode == mode)
                         return;
 
-                    // if we're currently on another mode we need to change to the correct mode.
-                    // TODO: enhance this
-                    Keys direction = (int)CurrentMode > (int)mode ? Keys.Left : Keys.Right;
-                    int amount = Math.Abs((int)CurrentMode - (int)mode);
-
-                    for (int i = 0; i < amount; i++)
-                    {
-                        PressReleaseKey(direction);
-                    }
-                    CurrentMode = mode;
+                    CurrentMode = (GameModes)((((int)CurrentMode) + 1) % 6);
+                    PressReleaseKey(Keys.Right);
+                    PrepareForMode(mode);
                     break;
                 case GameStates.GameOver:
                     // if we are already at the mode we want, just stay at the game over screen
