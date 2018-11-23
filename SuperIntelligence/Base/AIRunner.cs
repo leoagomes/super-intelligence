@@ -202,7 +202,7 @@ namespace SuperIntelligence
 
             // save the individual's fitness
             //Individual.Fitness = fitness + Game.GameTime;
-            Individual.Fitness = (Game.GameTime) / 60;
+            Individual.Fitness = (Game.GameTime) / 60f;
         }
     }
 }
