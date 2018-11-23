@@ -133,7 +133,7 @@ namespace SuperIntelligence.NEAT
 
                 foreach (Genome g in toReproduce)
                 {
-                    if (g != top)
+                    if (g == top)
                         continue;
 
                     for (int i = 0; i < ReproductionsPerGenome; i++)
