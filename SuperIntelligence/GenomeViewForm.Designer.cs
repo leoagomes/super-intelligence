@@ -44,6 +44,8 @@
             this.lastGenerationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.applicationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showDevToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.runTreeView = new System.Windows.Forms.TreeView();
             this.mainTabControl = new System.Windows.Forms.TabControl();
@@ -112,10 +114,14 @@
             this.browseFirstGenButton = new System.Windows.Forms.Button();
             this.gameModeComboBox = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.cefTabPage = new System.Windows.Forms.TabPage();
             this.runBackgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.runTimer = new System.Windows.Forms.Timer(this.components);
             this.openFirstGenFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.openLuaScriptDialog = new System.Windows.Forms.OpenFileDialog();
+            this.reloadCEFToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.runJSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -253,7 +259,8 @@
             // applicationToolStripMenuItem
             // 
             this.applicationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.settingsToolStripMenuItem});
+            this.settingsToolStripMenuItem,
+            this.toolsToolStripMenuItem});
             this.applicationToolStripMenuItem.Name = "applicationToolStripMenuItem";
             this.applicationToolStripMenuItem.Size = new System.Drawing.Size(80, 20);
             this.applicationToolStripMenuItem.Text = "Application";
@@ -261,9 +268,27 @@
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.settingsToolStripMenuItem.Text = "Settings";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
+            // 
+            // toolsToolStripMenuItem
+            // 
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showDevToolsToolStripMenuItem,
+            this.reloadCEFToolStripMenuItem,
+            this.openToolStripMenuItem,
+            this.runJSToolStripMenuItem});
+            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.toolsToolStripMenuItem.Text = "Tools";
+            // 
+            // showDevToolsToolStripMenuItem
+            // 
+            this.showDevToolsToolStripMenuItem.Name = "showDevToolsToolStripMenuItem";
+            this.showDevToolsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.showDevToolsToolStripMenuItem.Text = "Show DevTools";
+            this.showDevToolsToolStripMenuItem.Click += new System.EventHandler(this.showDevToolsToolStripMenuItem_Click);
             // 
             // splitContainer1
             // 
@@ -298,6 +323,7 @@
             this.mainTabControl.Controls.Add(this.speciesTabPage);
             this.mainTabControl.Controls.Add(this.genomeTabPage);
             this.mainTabControl.Controls.Add(this.runSettingsTabPage);
+            this.mainTabControl.Controls.Add(this.cefTabPage);
             this.mainTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainTabControl.Location = new System.Drawing.Point(0, 0);
             this.mainTabControl.Name = "mainTabControl";
@@ -1037,6 +1063,16 @@
             this.label2.TabIndex = 0;
             this.label2.Text = "Game Mode:";
             // 
+            // cefTabPage
+            // 
+            this.cefTabPage.Location = new System.Drawing.Point(4, 22);
+            this.cefTabPage.Name = "cefTabPage";
+            this.cefTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.cefTabPage.Size = new System.Drawing.Size(577, 525);
+            this.cefTabPage.TabIndex = 7;
+            this.cefTabPage.Text = "CEF";
+            this.cefTabPage.UseVisualStyleBackColor = true;
+            // 
             // runBackgroundWorker
             // 
             this.runBackgroundWorker.WorkerReportsProgress = true;
@@ -1056,6 +1092,27 @@
             // 
             this.openLuaScriptDialog.Filter = "Lua files|*.lua|All files|*.*";
             // 
+            // reloadCEFToolStripMenuItem
+            // 
+            this.reloadCEFToolStripMenuItem.Name = "reloadCEFToolStripMenuItem";
+            this.reloadCEFToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.reloadCEFToolStripMenuItem.Text = "Reload CEF";
+            this.reloadCEFToolStripMenuItem.Click += new System.EventHandler(this.reloadCEFToolStripMenuItem_Click);
+            // 
+            // openToolStripMenuItem
+            // 
+            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Text = "Open...";
+            this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+            // 
+            // runJSToolStripMenuItem
+            // 
+            this.runJSToolStripMenuItem.Name = "runJSToolStripMenuItem";
+            this.runJSToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.runJSToolStripMenuItem.Text = "Run JS";
+            this.runJSToolStripMenuItem.Click += new System.EventHandler(this.runJSToolStripMenuItem_Click);
+            // 
             // GenomeViewForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1066,6 +1123,7 @@
             this.MainMenuStrip = this.mainMenuStrip;
             this.Name = "GenomeViewForm";
             this.Text = "SuperIntelligence";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.GenomeViewForm_FormClosing);
             this.Load += new System.EventHandler(this.GenomeViewForm_Load);
             this.mainMenuStrip.ResumeLayout(false);
             this.mainMenuStrip.PerformLayout();
@@ -1203,5 +1261,11 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.NumericUpDown nBestUpDown;
         private System.Windows.Forms.NumericUpDown reproductionsPerGenomeUpDown;
+        private System.Windows.Forms.TabPage cefTabPage;
+        private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showDevToolsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem reloadCEFToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem runJSToolStripMenuItem;
     }
 }

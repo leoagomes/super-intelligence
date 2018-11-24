@@ -26,14 +26,21 @@ using SuperIntelligence.Data;
 using SuperIntelligence.Game;
 using static SuperIntelligence.Data.Constants;
 
+using CefSharp;
+using CefSharp.WinForms;
+
 namespace SuperIntelligence
 {
     public partial class GenomeViewForm : Form
     {
-        Data.AplicationSettingsData applicationSettings;
+        AplicationSettingsData applicationSettings;
         DateTime runStartTime = DateTime.Now;
         bool runStarted = false;
-        Game.GameModes gameMode;
+        GameModes gameMode;
+
+        ChromiumWebBrowser chromium;
+        string chromiumUrl;
+        RunInfoProxy runInfo = new RunInfoProxy(null);
 
         ChartValues<ObservablePoint> runMaxFitnessValues = new ChartValues<ObservablePoint>();
         ChartValues<ObservablePoint> runAvgFitnessValues = new ChartValues<ObservablePoint>();
@@ -50,6 +57,9 @@ namespace SuperIntelligence
         {
             InitializeComponent();
             settings = new RunSettingsController();
+
+            chromiumUrl = Application.StartupPath + "/HTML/index.html";
+            InitializeChromium();
         }
 
         #region Helper Methods
@@ -284,7 +294,7 @@ namespace SuperIntelligence
             EnsureApplicationSettings();
 
             // populate game modes
-            Enum.GetNames(typeof(Game.GameModes))
+            Enum.GetNames(typeof(GameModes))
                 .ToList()
                 .ForEach(name => gameModeComboBox.Items.Add(name));
 
@@ -329,6 +339,11 @@ namespace SuperIntelligence
             };
 
             SetUIRunSettings();
+        }
+
+        private void GenomeViewForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            ShutdownChromium();
         }
 
         /// <summary>
@@ -446,6 +461,9 @@ namespace SuperIntelligence
         {
             runTreeView.Invoke(new Runner.IndividualDelegate(BestGenome), new object[] { individual });
             runTreeView.Invoke(new Runner.IndividualDelegate(MarkTested), new object[] { individual });
+
+            // warn chromium
+            chromium.ExecuteScriptAsync("onTestedIndividual", individual.Generation, individual.Index);
         }
 
         /// <summary>
@@ -455,6 +473,9 @@ namespace SuperIntelligence
         private void Runner_OnUntestedIndividual(Individual individual)
         {
             runTreeView.Invoke(new Runner.IndividualDelegate(MarkUntested), new object[] { individual });
+
+            // warn chromium
+            chromium.ExecuteScriptAsync("onUntestedIndividual", individual.Generation, individual.Index);
         }
 
         /// <summary>
@@ -464,6 +485,10 @@ namespace SuperIntelligence
         private void Runner_OnGenerationFinished(Generation generation)
         {
             runFitnessChart.Invoke(new Runner.GenerationDelegate(GenerationFinished), new object[] { generation });
+
+            // warn chromium
+            runInfo.FinishedGeneration = generation;
+            chromium.ExecuteScriptAsync("onGenerationFinished()");
         }
 
         /// <summary>
@@ -474,6 +499,11 @@ namespace SuperIntelligence
         {
             runTreeView.Invoke(new Runner.GenerationDelegate(AddGeneration), new object[] { generation });
             runTreeView.Invoke(new Runner.GenerationDelegate(GenerateGenerationTabDesign), new object[] { generation });
+
+            // warn chromium
+            runInfo.NextGeneration = generation;
+            runInfo.Generations.Add(generation);
+            chromium.ExecuteScriptAsync("onNextGeneration()");
         }
 
         /// <summary>
@@ -482,6 +512,8 @@ namespace SuperIntelligence
         private void Runner_OnLoopFinish()
         {
             runTreeView.Invoke(new Runner.LoopFinishDelegate(ChangeWaitButton));
+
+            chromium.ExecuteScriptAsync("onLoopFinished()");
         }
         #endregion
 
@@ -663,7 +695,6 @@ namespace SuperIntelligence
         }
         #endregion
 
-        #region Interface Click/Selection Handlers
         /// <summary>
         /// 
         /// </summary>
@@ -898,8 +929,6 @@ namespace SuperIntelligence
         }
         #endregion
 
-        #endregion
-
         #region Misc
         /// <summary>
         /// Activates the background worker.
@@ -923,6 +952,10 @@ namespace SuperIntelligence
                                                       (int)settings.s.reproductionsPerGenome, (int)settings.s.nBest);
             }
 
+            // register chromium stuffs
+            runInfo.CurrentRunner = runner;
+            chromium.ExecuteScriptAsync("onRunInfoUpdated()");
+
             Runner_OnNextGeneration(firstGen);
 
             runner.OnNextGeneration += Runner_OnNextGeneration;
@@ -931,8 +964,76 @@ namespace SuperIntelligence
             runner.OnIndividualTested += Runner_OnIndividualTested;
             runner.OnLoopFinish += Runner_OnLoopFinish;
 
+
             runner.DoRun(gameMode, firstGen, settings.s.selectionAlgorithm, (int)settings.s.reproductionsPerGenome,
                          (int)settings.s.nBest);
+        }
+        #endregion
+
+        #region Chromium-Related
+        private void InitializeChromium()
+        {
+            CefSettings settings = new CefSettings();
+            CefSharpSettings.LegacyJavascriptBindingEnabled = true;
+
+            Cef.Initialize(settings);
+
+            chromium = new ChromiumWebBrowser(chromiumUrl);
+
+            chromium.RegisterJsObject("runInfo", runInfo);
+
+            cefTabPage.Controls.Add(chromium);
+            chromium.Dock = DockStyle.Fill;
+        }
+
+        private void ShutdownChromium()
+        {
+            Cef.Shutdown();
+        }
+
+        private void showDevToolsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            chromium.ShowDevTools();
+        }
+
+        private void reloadCEFToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            chromium.Reload(true);
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                chromium.Load(dialog.FileName);
+            }
+        }
+
+        private string _lastJsCode = "";
+        private void runJSToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TextDialog dialog = new TextDialog("JavaScript code", _lastJsCode);
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                string code = dialog.TypedText;
+                _lastJsCode = code;
+
+                chromium
+                    .EvaluateScriptAsync(code)
+                    .ContinueWith(t =>
+                    {
+                        if (!t.IsFaulted)
+                        {
+                            var response = t.Result;
+
+                            if (response.Success)
+                            {
+                                MessageBox.Show(response.Result?.ToString() ?? "null", "JavaScript returned");
+                            }
+                        }
+                    }, TaskScheduler.FromCurrentSynchronizationContext());
+            }
         }
         #endregion
     }

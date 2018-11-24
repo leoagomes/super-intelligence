@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SuperIntelligence</title>
+
+    <!-- UIKit -->
+    <!-- UIkit CSS -->
+    <link rel="stylesheet" href="./css/uikit.min.css" />
+    
+    <!-- UIkit JS -->
+    <script src="./js/uikit.min.js"></script>
+    <script src="./js/uikit-icons.min.js"></script>
+
+    <link rel="stylesheet" href="./css/main.css">
+</head>
+
+<body>
+    <!-- div aligns sidepanel and content  -->
+    <div id="main-content-grid"
+        class="content-grid uk-grid-small" uk-grid>
+        <!-- side-panel for run tree -->
+        <div id="run-tree-sidebar"
+            class="uk-visible@s uk-width-1-4@s uk-width-medium@m">
+            <h3>Run Tree</h3>
+            <ul id="run-tree-nav" class="uk-nav-default uk-nav-parent-icon" uk-nav="multiple: true">
+                <li class="uk-active"><a href="#">Active</a></li>
+                <li class="uk-parent">
+                    <a href="#">Parent</a>
+                    <ul class="uk-nav-sub">
+                        <li><a href="#">Sub item</a></li>
+                        <li>
+                            <a href="#">Sub item</a>
+                            <ul>
+                                <li><a href="#">Sub item</a></li>
+                                <li><a href="#">Sub item</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <!-- just a normal divider -->
+        <hr class="uk-divider-vertical uk-visible@s" style="height: 100%">
+
+        <!-- main content div, shouldn't change this directly, though -->
+        <div id="main-content" class="uk-width-expand">
+            <!-- tabs -->
+            <ul uk-tab>
+                <li class="uk-active"><a href="#">Run</a></li>
+                <li><a href="#">Generation</a></li>
+                <li><a href="#">Species</a></li>
+                <li><a href="#">Genome</a></li>
+            </ul>
+
+            <!-- tab content -->
+            <div id="tab-content" uk-grid>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/main.js"></script>
+</body>
+</html>

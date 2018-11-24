@@ -21,7 +21,7 @@ using static SuperIntelligence.Random.Random;
 
 namespace SuperIntelligence
 {
-    class Runner
+    public class Runner
     {
         public static slf4net.ILogger logger = slf4net.LoggerFactory.GetLogger(typeof(Runner));
 
@@ -273,8 +273,6 @@ namespace SuperIntelligence
                     generation = generation.Next(generator, genomeGenerator, selectionAlgorithm, reproductionsPerGenome, nBest);
 
                 OnNextGeneration(generation);
-
-                // ajustes da mutação
 
                 // clean up this generation's data
                 TestedIndividuals = new ConcurrentQueue<Individual>();

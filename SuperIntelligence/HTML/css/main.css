@@ -1,0 +1,29 @@
+
+html, body { 
+    height: 100%;
+    margin: 0;
+}
+
+#main-content-grid {
+    height: 100%;
+    margin: 0;
+}
+
+.sidebar-tree {
+    display: block;
+    position: fixed;
+    top: 0px;
+    bottom: 0;
+    border-right: 1px #e5e5e5 solid;
+    overflow: auto;
+    padding: 40px 40px 60px 40px;
+    width: 240px !important;
+}
+
+#run-tree-sidebar {
+    padding: 30px;
+}
+
+.container {
+    display: flex;
+}

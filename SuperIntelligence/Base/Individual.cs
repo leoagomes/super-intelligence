@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace SuperIntelligence
 {
-    class Individual
+    public class Individual
     {
         public Genome Genome;
         [JsonIgnore]
