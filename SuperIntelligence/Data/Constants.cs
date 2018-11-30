@@ -8,7 +8,7 @@ namespace SuperIntelligence.Data
 {
     public class Constants
     {
-        public static int NetworkInputs = 13;
+        public static int NetworkInputs = 8;
         public static int NetworkOutputs = 2;
         public enum SelectionAlgorithms : int { AllWithBest, NWithBest, Luhn }
     }

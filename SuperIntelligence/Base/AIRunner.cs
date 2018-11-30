@@ -45,27 +45,25 @@ namespace SuperIntelligence
             int lastPlayerSlot = Game.GetCurrentPlayerSlot();
             int slotCount = Game.SlotCount;
 
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < NetworkInputs; i++)
             {
-                int currentWallSlot = (lastPlayerSlot + i) % slotCount;
+                int wallSlot = (i + lastPlayerSlot) % slotCount;
 
-                double distance = 4.0;
-                double length = 4.0;
+                // add slot distance to input
+                double distance = 2.0;
                 foreach (Wall wall in closer)
                 {
-                    if (wall.Slot == currentWallSlot)
+                    if (wall.Slot == wallSlot)
                     {
-                        distance = wall.Distance / 1000f;
-                        length = wall.Length / 1000f;
+                        distance = wall.Distance / 3000f;
                         break;
                     }
                 }
-
-                input[i*2] = distance;
-                input[i*2 + 1] = length;
+                input[i] = distance;
             }
 
-            input[NetworkInputs - 1] = 1f;
+            input[NetworkInputs - 2] = Game.PlayerAngle / 360;
+            input[NetworkInputs - 1] = 1;
         }
 
         private int FarthestWallSlot(List<double> input)
@@ -84,17 +82,16 @@ namespace SuperIntelligence
 
         public void DoSafeRun()
         {
-            //try
-            //{
+            try
+            {
                 DoGameRun();
-            //}
-            //catch (Exception e)
-            //{
-            //    logger.Error("Exception caught trying to do an AIRunner Run.\nIndividual was: " + Individual);
-            //    logger.Error("Exception caught was: " + e);
-            //    logger.Warn("Setting failed individual fitness to minimum.");
-            //    Individual.Fitness = int.MinValue;
-            //}
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("ERROR!!!!!!!!!!!!!");
+                Console.WriteLine(e.Message);
+                Individual.Fitness = int.MinValue;
+            }
         }
 
         public void DoGameRun()
@@ -133,8 +130,8 @@ namespace SuperIntelligence
                     throw new Exception("Unexpected amount of outputs: " + output.Count);
 
                 // check if mouse left/right should be pressed
-                bool mouseLeftDown = output[0] < ButtonDownThreshold;
-                bool mouseRightDown = output[0] > ButtonDownThreshold;
+                bool mouseLeftDown = output[0] > ButtonDownThreshold;
+                bool mouseRightDown = output[0] < ButtonDownThreshold;
                 bool mouseDown = output[1] > ButtonDownThreshold;
 
                 // write it out to game memory

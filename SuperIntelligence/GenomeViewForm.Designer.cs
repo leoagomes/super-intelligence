@@ -116,6 +116,9 @@
             this.runTimer = new System.Windows.Forms.Timer(this.components);
             this.openFirstGenFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.openLuaScriptDialog = new System.Windows.Forms.OpenFileDialog();
+            this.label14 = new System.Windows.Forms.Label();
+            this.gameSpeedUpDown = new System.Windows.Forms.NumericUpDown();
+            this.setGameSpeedButton = new System.Windows.Forms.Button();
             this.mainMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -148,6 +151,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.gameInstancesUpDown)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.populationSizeUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gameSpeedUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // mainMenuStrip
@@ -626,10 +630,13 @@
             // 
             // runSettingsTabPage
             // 
+            this.runSettingsTabPage.Controls.Add(this.setGameSpeedButton);
+            this.runSettingsTabPage.Controls.Add(this.label14);
             this.runSettingsTabPage.Controls.Add(this.algorithmsGroupBox);
             this.runSettingsTabPage.Controls.Add(this.label10);
             this.runSettingsTabPage.Controls.Add(this.resetButtonRunSettings);
             this.runSettingsTabPage.Controls.Add(this.runVariablesGroupBox);
+            this.runSettingsTabPage.Controls.Add(this.gameSpeedUpDown);
             this.runSettingsTabPage.Controls.Add(this.luaScriptTextBox);
             this.runSettingsTabPage.Controls.Add(this.saveButtonRunSettings);
             this.runSettingsTabPage.Controls.Add(this.gameInstancesUpDown);
@@ -654,7 +661,7 @@
             this.algorithmsGroupBox.Controls.Add(this.reproductionsPerGenomeUpDown);
             this.algorithmsGroupBox.Controls.Add(this.label11);
             this.algorithmsGroupBox.Controls.Add(this.reproductionSelectionComboBox);
-            this.algorithmsGroupBox.Location = new System.Drawing.Point(242, 188);
+            this.algorithmsGroupBox.Location = new System.Drawing.Point(242, 213);
             this.algorithmsGroupBox.Name = "algorithmsGroupBox";
             this.algorithmsGroupBox.Size = new System.Drawing.Size(305, 99);
             this.algorithmsGroupBox.TabIndex = 10;
@@ -743,7 +750,7 @@
             this.runVariablesGroupBox.Controls.Add(this.label7);
             this.runVariablesGroupBox.Controls.Add(this.label6);
             this.runVariablesGroupBox.Controls.Add(this.label1);
-            this.runVariablesGroupBox.Location = new System.Drawing.Point(9, 188);
+            this.runVariablesGroupBox.Location = new System.Drawing.Point(9, 213);
             this.runVariablesGroupBox.Name = "runVariablesGroupBox";
             this.runVariablesGroupBox.Size = new System.Drawing.Size(227, 150);
             this.runVariablesGroupBox.TabIndex = 8;
@@ -951,7 +958,7 @@
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.randomFirstGenCheckBox);
             this.groupBox1.Controls.Add(this.browseFirstGenButton);
-            this.groupBox1.Location = new System.Drawing.Point(9, 85);
+            this.groupBox1.Location = new System.Drawing.Point(9, 110);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(378, 97);
             this.groupBox1.TabIndex = 5;
@@ -1056,6 +1063,50 @@
             // 
             this.openLuaScriptDialog.Filter = "Lua files|*.lua|All files|*.*";
             // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(6, 86);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(72, 13);
+            this.label14.TabIndex = 11;
+            this.label14.Text = "Game Speed:";
+            // 
+            // gameSpeedUpDown
+            // 
+            this.gameSpeedUpDown.DecimalPlaces = 4;
+            this.gameSpeedUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.gameSpeedUpDown.Location = new System.Drawing.Point(80, 84);
+            this.gameSpeedUpDown.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.gameSpeedUpDown.Name = "gameSpeedUpDown";
+            this.gameSpeedUpDown.Size = new System.Drawing.Size(97, 20);
+            this.gameSpeedUpDown.TabIndex = 1;
+            this.gameSpeedUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.gameSpeedUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.gameSpeedUpDown.ValueChanged += new System.EventHandler(this.weightMutationUpDown_ValueChanged);
+            // 
+            // setGameSpeedButton
+            // 
+            this.setGameSpeedButton.Location = new System.Drawing.Point(183, 81);
+            this.setGameSpeedButton.Name = "setGameSpeedButton";
+            this.setGameSpeedButton.Size = new System.Drawing.Size(75, 23);
+            this.setGameSpeedButton.TabIndex = 12;
+            this.setGameSpeedButton.Text = "Set";
+            this.setGameSpeedButton.UseVisualStyleBackColor = true;
+            this.setGameSpeedButton.Click += new System.EventHandler(this.setGameSpeedButton_Click);
+            // 
             // GenomeViewForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1109,6 +1160,7 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.populationSizeUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gameSpeedUpDown)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1203,5 +1255,8 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.NumericUpDown nBestUpDown;
         private System.Windows.Forms.NumericUpDown reproductionsPerGenomeUpDown;
+        private System.Windows.Forms.Button setGameSpeedButton;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.NumericUpDown gameSpeedUpDown;
     }
 }

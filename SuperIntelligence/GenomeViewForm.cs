@@ -935,5 +935,13 @@ namespace SuperIntelligence
                          (int)settings.s.nBest);
         }
         #endregion
+
+        private void setGameSpeedButton_Click(object sender, EventArgs e)
+        {
+            if (runner != null)
+            {
+                runner.GameSpeed = (double)gameSpeedUpDown.Value;
+            }
+        }
     }
 }

@@ -15,6 +15,7 @@ using NLua;
 
 using SuperIntelligence.Game;
 using SuperIntelligence.NEAT;
+using SuperIntelligence.DLLs;
 
 using static SuperIntelligence.Random.Random;
 
@@ -51,6 +52,8 @@ namespace SuperIntelligence
         public event LoopFinishDelegate OnLoopFinish = delegate { };
 
         public Lua LuaState;
+
+        public double GameSpeed = 1.0;
 
         public Runner(string gamePath, int gameInstances, string luaScriptPath = "")
         {
@@ -221,6 +224,7 @@ namespace SuperIntelligence
                     }
 
                     manager.Game.SRand((uint)individual.Generation);
+                    manager.Game.GameSpeed = GameSpeed;
 
                     AIRunner runner = new AIRunner(manager, individual, mode);
                     ThreadStart start = new ThreadStart(() =>

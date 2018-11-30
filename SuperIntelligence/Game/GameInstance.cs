@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-
+using System.Runtime.InteropServices;
+using System.Threading;
 using Binarysharp.MemoryManagement;
 using Binarysharp.MemoryManagement.Memory;
 
@@ -47,6 +48,7 @@ namespace SuperIntelligence.Game
         Process Process;
 
         RemotePointer BasePointer;
+        Binarysharp.MemoryManagement.Modules.InjectedModule Module;
 
         #region Game Properties Getters/Setters
         public Wall[] Walls
@@ -155,6 +157,18 @@ namespace SuperIntelligence.Game
                 return BasePointer.Read<int>((int)Offsets.GameTime);
             }
         }
+
+        public double GameSpeed
+        {
+            get
+            {
+                return Module.FindFunction("GetSpeed").Execute<double>();
+            }
+            set
+            {
+                Module.FindFunction("SetSpeed").Execute(value);
+            }
+        }
         #endregion
 
         public GameInstance(Process process)
@@ -166,6 +180,14 @@ namespace SuperIntelligence.Game
             IntPtr baseStaticAddress = new IntPtr((int)Offsets.Base1);
             IntPtr basePtr = (IntPtr)Memory.Read<int>(baseStaticAddress);
             BasePointer = Memory[basePtr, false];
+
+            //DLLs.Injector.Inject(process, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DLLs", "SpeedRacer.dll"));
+            //DLLs.Injector.Inject(process, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "EasyHook32.dll"));
+            Memory.Modules.Inject(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "EasyHook32.dll"));
+            //DLLs.Injector.Inject(process, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpeedRacer.dll"));
+            Module = Memory.Modules.Inject(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpeedRacer.dll"));
+            Module.FindFunction("HookFunctions").Execute();
+            Thread.Sleep(1000);
         }
 
 
@@ -214,11 +236,11 @@ namespace SuperIntelligence.Game
             Process.Kill();
 
         public int GetCurrentPlayerSlot() =>
-            ((PlayerAngle * SlotCount) / 360);
+            (PlayerAngle * SlotCount / 360);
 
         public void SRand(uint seed)
         {
-            Memory["msvcr100"]["srand"].Execute(Binarysharp.MemoryManagement.Assembly.CallingConvention.CallingConventions.Cdecl, seed);
+            Memory["SpeedRacer"]["SetRandomSeed"].Execute(seed);
         }
     }
 }

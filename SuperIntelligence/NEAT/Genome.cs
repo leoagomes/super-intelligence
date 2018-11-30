@@ -42,15 +42,15 @@ namespace SuperIntelligence.NEAT
         /// <summary>
         /// Compatibility function excess coefficient.
         /// </summary>
-        public static double ExcessCoefficient = 1.0;
+        public static double ExcessCoefficient = 3.0;
         /// <summary>
         /// Compatibility function disjoint coefficient.
         /// </summary>
-        public static double DisjointCoefficient = 1.0;
+        public static double DisjointCoefficient = 3.0;
         /// <summary>
         /// Compatibility function weight coefficient.
         /// </summary>
-        public static double WeightCoefficient = 0.4;
+        public static double WeightCoefficient = 0.6;
         #endregion
         #endregion
 
