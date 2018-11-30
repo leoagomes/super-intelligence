@@ -132,7 +132,7 @@ namespace SuperIntelligence
             // add fitness data to run graphs
             var allGenomes = generation.Species.SelectMany(s => s.Members);
             var bestGenome = allGenomes.Max();
-            double meanFitness = allGenomes.Average(g => g.Fitness);
+            double meanFitness = allGenomes.Select(g => g.Fitness > 0).Average(g => g.Fitness);
             double maxFitness = bestGenome.Fitness;
 
             runAvgFitnessValues.Add(new ObservablePoint(generation.Number, meanFitness));
