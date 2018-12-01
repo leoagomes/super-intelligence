@@ -16,6 +16,7 @@ At the time of this writing, you can download this version of the game at their 
 
 You should use Visual Studio 2017. All dependencies are properly specified as NuGet packages. Dependencies at the moment are:
 
+* LiveCharts.Net (for the C# UI)
 * MemorySharp (for the C# part)
 * EasyHook (for the C++ library)
 
